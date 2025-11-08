@@ -1,0 +1,50 @@
+/* styles/theme.css */
+
+/* global variables */
+:root {
+    --primary: #3B5BDB;
+    --primary-50: #EEF2FF;
+    --primary-100: #E0E7FF;
+    --primary-200: #C7D2FE;
+    --primary-600: #2D4A8D;
+    --primary-700: #1E345A;
+
+    --accent: #00D4FF;
+    --accent-foreground: #FFF;
+
+    --secondary: #00D4FF;
+    --secondary-foreground: #FFF;
+
+    --background: #FFF;
+    --foreground: #1A2A3A;
+
+    --border: #E5EBF3;
+    --input: #F5F8FB;
+
+    --black: #21252C;
+
+    /* Fonts */
+    --font-main: 'Inter', sans-serif;
+    --font-heading: 'Poppins', sans-serif;
+
+    --border-radius: 0.5rem;
+    --transition: 0.2s ease-in-out;
+}
+
+
+body {
+    font-family: var(--font-main);
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body,
+#root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: red;
+}
+
