@@ -1,0 +1,30 @@
+# users_router
+
+from typing import List
+from fastapi import APIRouter, Depends, HTTPException
+from backend.utils.database import get_db_connection
+from backend.schemas.user_schema import UserIn, UserOut
+from backend.entities.user import User
+
+
+router = APIRouter(prefix="/users", tags=["Users"])
+
+@router.get("/", response_model=List[UserOut])
+async def get_users():
+    conn = await get_db_connection()
+    user_repo = User(conn)
+    users = await user_repo.get_all_users()
+    await conn.close()
+    return users
+
+
+@router.post("/", response_model=UserOut)
+async def create_user(user_data: UserIn):
+    conn = await get_db_connection()
+    user_repo = User(conn)
+    user_id, status = await user_repo.add_user(user_data)
+    await conn.close()
+    if status == "ok":
+        return user_data.model_dump()
+    raise HTTPException(status_code=400, detail="User not created!")
+
