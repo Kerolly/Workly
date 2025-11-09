@@ -5,9 +5,12 @@ import psycopg
 from dotenv import load_dotenv
 import os
 from psycopg.rows import dict_row
+from pathlib import Path
 
 # Load environment variables from .env file
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parents[1]
+load_dotenv(BASE_DIR / ".env")
+
 DB_NAME = os.getenv("DATABASE_NAME")
 DB_USER = os.getenv("DATABASE_USER")
 DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
