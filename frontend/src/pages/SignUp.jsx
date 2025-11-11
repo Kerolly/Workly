@@ -1,4 +1,4 @@
-// login.jsx
+// Login.jsx
 
 import {useState} from "react";
 import { Link as RouterLink} from "react-router-dom"

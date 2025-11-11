@@ -1,4 +1,4 @@
-// login.jsx
+// Login.jsx
 
 import {useState} from "react";
 import '../styles/theme.css';
@@ -13,15 +13,78 @@ import {
     VStack,
     InputGroup, Flex, Link
 } from "@chakra-ui/react";
-import {Link as RouterLink} from "react-router";
+import {Link as RouterLink, useNavigate} from "react-router";
 
 
 export default function Login() {
 
+    // Password show
     const [show, setShow] = useState(false);
     const handleClickPassword = () => {
         setShow(!show);
     }
+
+    // init navigate
+    const navigate = useNavigate();
+
+    // Get data from inputs
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState(null);
+
+    const handleSubmit = async (event) => {
+        event.preventDefault(); // stop reloading page
+        setError(null);
+
+        console.log("Send ... ", {email, password});
+
+        try {
+
+            // create FormData obj
+            const formData = new URLSearchParams();
+            formData.append("username", email);
+            formData.append("password", password);
+
+
+            // send the data to server
+            const response = await fetch('http://127.0.0.1:8000/auth/login',{
+                method: "POST",
+
+                // transform js object into a JSON
+                body: formData,
+            })
+
+            // get the data from server response
+            const data = await response.json();
+
+            if (!response.ok){
+                // if the server throw an error
+                // data.details -> fastapi standard
+                throw new Error(data.details || "Authentication failed");
+            }
+
+            // log the ath details
+            console.log("Authentication successful", data);
+            console.log("Access token: ", data.access_token);
+
+            // save the token to local storage (for the moment)
+            localStorage.setItem("access_token", data.access_token);
+
+            // Auth successes alert
+            //alert("Authentication successful");
+            navigate("/profile");
+
+
+        }catch(error) {
+
+            // get errors
+            console.log("Auth error:", error.message);
+            setError(error.message);
+
+        }
+
+    }
+
 
     return (
 
@@ -45,7 +108,8 @@ export default function Login() {
                     <Field.Root>
                         <Field.Label color={"#21252C"}>Email Address</Field.Label>
                         <InputGroup flex={"1"} startElement={<Mail size={"17px"}/>}>
-                            <Input color={"var(--black)"} placeholder="me@workly.com"/>
+                            <Input color={"var(--black)"} placeholder="me@workly.com"
+                                value={email} onChange={(e) => setEmail(e.target.value)} />
                         </InputGroup>
                     </Field.Root>
                     <Field.Root>
@@ -57,15 +121,15 @@ export default function Login() {
                                              transition="all 0.5s ease" _hover={{transform: "scale(1.5)"}}/> :
                                         <EyeClosed size={"17px"} cursor={"pointer"} onClick={handleClickPassword}
                                                    transition="all 0.5s ease" _hover={{transform: "scale(1.5)"}}/>}>
-                            <Input color={"var(--black)"} type={show ? "text" : "password"} placeholder="password"/>
+                            <Input color={"var(--black)"} type={show ? "text" : "password"} placeholder="password"
+                                value={password} onChange={(e) => setPassword(e.target.value)} />
                         </InputGroup>
                     </Field.Root>
                     <Button mt={"10px"} w={"100%"} variant="subtle" type="submit"
                             bg={"var(--primary)"} _hover={{
                         bg: "var(--primary-600)", transform: "translateY(1px)",
                         shadow: "sm",
-                    }}
-                            textStyle={["md", "lg"]}>Login</Button>
+                    }} textStyle={["md", "lg"]} onClick={handleSubmit}>Login</Button>
 
                 </VStack>
                     <Flex align="center" justify="center" gap="3" w="full" my="6">
