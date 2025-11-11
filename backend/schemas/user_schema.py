@@ -8,7 +8,7 @@ from typing import Optional
 class UserIn(BaseModel):
     first_name: str = Field(min_length=2, max_length=30)
     last_name: str = Field(min_length=2, max_length=30)
-    email: EmailStr
+    email: str
     password: str = Field(min_length=2)
     role: str = Field(pattern="^(employee|manager|admin)$")
 
@@ -18,9 +18,9 @@ class UserOut(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[EmailStr] = None
-    password: Optional[str] = None
     role: Optional[str] = None
     created_at: Optional[datetime] = None
+    is_active: Optional[bool] = None
 
     model_config = {'from_attributes': True}
 

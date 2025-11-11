@@ -2,6 +2,8 @@
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
+
+from backend.utils.auth_deps import get_current_active_user
 from backend.utils.database import get_db_connection
 from backend.schemas.user_schema import UserIn, UserOut
 from backend.entities.user import User
@@ -10,7 +12,7 @@ from backend.entities.user import User
 router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.get("/", response_model=List[UserOut])
-async def get_users():
+async def get_users(current_user: UserOut = Depends(get_current_active_user)):
     conn = await get_db_connection()
     user_repo = User(conn)
     users = await user_repo.get_all_users()
@@ -19,7 +21,7 @@ async def get_users():
 
 
 @router.post("/", response_model=UserOut)
-async def create_user(user_data: UserIn):
+async def create_user(user_data: UserIn, current_user: UserOut = Depends(get_current_active_user)):
     conn = await get_db_connection()
     user_repo = User(conn)
     user_id, status = await user_repo.add_user(user_data)
