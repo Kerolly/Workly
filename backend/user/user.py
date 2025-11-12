@@ -29,7 +29,7 @@ class User:
         return result["id"], "ok"
 
 
-    async def get_user_by_email(self, user_data: UserOut):
+    async def get_user_by_email(self, email: str):
         query = f"""
             SELECT id, email, password_hash, is_active
             FROM {self.table}
@@ -38,7 +38,7 @@ class User:
 
         async with self.conn.cursor() as cursor:
             await cursor.execute(query,
-                                 (user_data.email,))
+                                 (email,))
 
             result = await cursor.fetchone()
 

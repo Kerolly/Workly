@@ -31,7 +31,7 @@ def index():
     return {"Hello": "World"}
 
 @app.get("/profile", response_model=UserOut)
-def get_profile(current_user: str = Depends(get_current_active_user)):
+def get_profile(current_user: UserOut = Depends(get_current_active_user)):
     return current_user
 
 @app.get("/verify-token")
