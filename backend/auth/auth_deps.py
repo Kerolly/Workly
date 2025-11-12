@@ -8,9 +8,7 @@ from backend.utils.database import get_db_connection
 from backend.auth.jwt_handler import oauth2_scheme, verify_token
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-
-    db = await get_db_connection()
+async def get_current_user(token: str = Depends(oauth2_scheme), db = Depends(get_db_connection)):
 
     token_data = verify_token(token)
     user_repo = User(conn=db)
@@ -18,7 +16,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     user_dict = await user_repo.get_user_for_auth(token_data.email)
 
     if user_dict is None:
-        await db.close()
+
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User does not exist",
@@ -27,7 +25,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
     user_dict.pop("password_hash", None)
 
-    await db.close()
     return UserOut(**user_dict)
 
 def get_current_active_user(current_user: UserOut = Depends(get_current_user)):

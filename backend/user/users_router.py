@@ -12,11 +12,11 @@ from backend.user.user import User
 router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.get("/", response_model=List[UserOut])
-async def get_users(current_user: UserOut = Depends(get_current_active_user)):
-    conn = await get_db_connection()
-    user_repo = User(conn)
+async def get_users(current_user: UserOut = Depends(get_current_active_user), db = Depends(get_db_connection)):
+
+    user_repo = User(db)
     users = await user_repo.get_all_users()
-    await conn.close()
+
     return users
 
 

@@ -17,11 +17,13 @@ DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
 
 
 # Connect to the PostgreSQL database
+# utils/database.py
 async def get_db_connection():
-    conn = await psycopg.AsyncConnection.connect(host="localhost",
-                           dbname=DB_NAME,
-                           user=DB_USER,
-                           password=DB_PASSWORD,
-                           port=5432,
-                            row_factory=dict_row)
-    return conn
+    conn = await psycopg.AsyncConnection.connect(
+        host="localhost", dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD,
+        port=5432, row_factory=dict_row
+    )
+    try:
+        yield conn
+    finally:
+        await conn.close()
