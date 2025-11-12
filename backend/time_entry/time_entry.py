@@ -1,7 +1,6 @@
 # time_entry.py
 
-import psycopg
-from backend.schemas.time_entry_schema import TimeEntryOut, TimeEntryIn
+from backend.time_entry.time_entry_schema import TimeEntryIn
 
 
 class TimeEntry:

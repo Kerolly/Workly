@@ -6,7 +6,7 @@ import os
 import jwt
 from fastapi import HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from backend.schemas.auth_schema import TokenData
+from backend.auth.auth_schema import TokenData
 
 load_dotenv()
 

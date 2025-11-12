@@ -3,10 +3,10 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 
-from backend.utils.auth_deps import get_current_active_user
+from backend.auth.auth_deps import get_current_active_user
 from backend.utils.database import get_db_connection
-from backend.schemas.user_schema import UserIn, UserOut
-from backend.entities.user import User
+from backend.user.user_schema import UserIn, UserOut
+from backend.user.user import User
 
 
 router = APIRouter(prefix="/users", tags=["Users"])

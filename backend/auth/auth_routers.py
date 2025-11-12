@@ -4,15 +4,15 @@ from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 
-from backend.entities.user import User
-from backend.schemas.auth_schema import Token
-from backend.schemas.user_schema import UserOut, UserIn
+from backend.user.user import User
+from backend.auth.auth_schema import Token
+from backend.user.user_schema import UserOut, UserIn
 from backend.utils.database import get_db_connection
-from backend.utils.jwt_handler import create_access_token
+from backend.auth.jwt_handler import create_access_token
 from backend.utils.pwd_handler import hash_password, verify_password
 
 BASE_DIR = Path(__file__).resolve().parents[1]

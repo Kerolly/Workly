@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.routers import users_router, auth_routers
-from backend.schemas.user_schema import UserOut
-from backend.utils.auth_deps import get_current_active_user
+from backend.user import users_router
+from backend.auth import auth_routers
+from backend.user.user_schema import UserOut
+from backend.auth.auth_deps import get_current_active_user
 
 app = FastAPI()
 
@@ -30,7 +31,7 @@ def index():
     return {"Hello": "World"}
 
 @app.get("/profile", response_model=UserOut)
-def get_profile(current_user: UserOut = Depends(get_current_active_user)):
+def get_profile(current_user: str = Depends(get_current_active_user)):
     return current_user
 
 @app.get("/verify-token")
