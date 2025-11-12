@@ -1,6 +1,6 @@
 from backend.utils.database import get_db_connection
-from backend.entities.user import User
-from backend.schemas.user_schema import UserIn, UserOut
+from backend.user.user import User
+from backend.user.user_schema import UserIn, UserOut
 import asyncio
 
 #
@@ -67,6 +67,16 @@ async def test_delete_user():
 
     await conn.close()
 
+
+async def test_profile():
+    conn = await get_db_connection()
+    new_user = User(conn)
+
+    res = await new_user.get_full_profile_by_email("andrei@gmail.com")
+    print(res)
+    await conn.close()
+
 #asyncio.run(test())
 #asyncio.run(test_get_all_users())
 #asyncio.run(test_delete_user())
+asyncio.run(test_profile())
