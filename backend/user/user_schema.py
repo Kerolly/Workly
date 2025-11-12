@@ -17,7 +17,7 @@ class UserOut(BaseModel):
     id: Optional[int] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     role: Optional[str] = None
     created_at: Optional[datetime] = None
     is_active: Optional[bool] = None

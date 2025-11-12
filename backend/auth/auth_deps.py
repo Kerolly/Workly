@@ -24,7 +24,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db = Depends(get
         )
 
     user_dict.pop("password_hash", None)
-
+    #print("auth_deps:", user_dict)
     return UserOut(**user_dict)
 
 def get_current_active_user(current_user: UserOut = Depends(get_current_user)):

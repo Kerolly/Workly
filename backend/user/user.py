@@ -61,7 +61,7 @@ class User:
 
     async def get_user_for_auth(self, email:str):
         query = f"""
-            SELECT id, first_name, last_name, password_hash, email, is_active
+            SELECT id, password_hash, email, is_active
             FROM {self.table}
             WHERE email = %s 
             """

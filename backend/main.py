@@ -3,8 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.user import users_router
 from backend.auth import auth_routers
+from backend.user.user import User
 from backend.user.user_schema import UserOut
 from backend.auth.auth_deps import get_current_active_user
+from backend.utils.database import get_db_connection
 
 app = FastAPI()
 
@@ -31,7 +33,14 @@ def index():
     return {"Hello": "World"}
 
 @app.get("/profile", response_model=UserOut)
-def get_profile(current_user: UserOut = Depends(get_current_active_user)):
+async def get_profile(current_user: UserOut = Depends(get_current_active_user), db = Depends(get_db_connection)):
+
+    user_repo = User(db)
+
+    current_user = await user_repo.get_full_profile_by_email(current_user.email)
+
+    #print("main:", current_user)
+
     return current_user
 
 @app.get("/verify-token")
