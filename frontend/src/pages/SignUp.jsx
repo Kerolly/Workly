@@ -14,6 +14,7 @@ import {
     VStack,
     InputGroup, Portal, Select, createListCollection, HStack, Flex, Link
 } from "@chakra-ui/react";
+import {useNavigate} from "react-router";
 
 
 export default function SignUp() {
@@ -29,6 +30,72 @@ export default function SignUp() {
             { label: "Manager", value: "manager" },
         ],
     })
+
+    // Get data from inputs
+    const [first_name, setFirst_name] = useState("")
+    const [last_name, setLast_name] = useState("")
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [role, setRole] = useState("");
+    const [error, setError] = useState(null);
+
+    // create navigate
+    const navigate = useNavigate();
+
+
+    const handleSubmit = async (event) => {
+        event.preventDefault(); // stop reloading page
+        setError(null);
+
+        // console.log("First name:", first_name);
+        // console.log("Last name:", last_name);
+        // console.log("Email:", email);
+        // console.log("Password:", password);
+        // console.log("Role:", role[0]);
+
+        const userData = {
+            first_name: first_name,
+            last_name: last_name,
+            email: email,
+            password: password,
+            role: role[0].toLowerCase(),
+        }
+
+        console.log("Send data...", userData);
+
+        try{
+
+            const response = await fetch("http://localhost:8000/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json", // send JSON
+                },
+                body: JSON.stringify(userData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                console.log("Error occured: ", data);
+                const errorMsg = data.detail[0].msg;
+                throw new Error(errorMsg || "Registration Failed");
+
+            }
+
+            // success
+            console.log("Successfull registration!", data);
+            alert("Account successfully registered!\nYou can now log in.");
+
+            navigate("/login");
+
+
+        }catch(err){
+
+            console.log("Registraion error: ", err);
+            setError(err.message);
+        }
+
+    }
 
     return (
 
@@ -55,14 +122,16 @@ export default function SignUp() {
                     <Field.Root>
                         <Field.Label color={"var(--black)"}>First Name</Field.Label>
                         <InputGroup flex={"1"} startElement={<User size={"17px"}/>}>
-                            <Input color={"var(--black)"} placeholder="Ion"/>
+                            <Input color={"var(--black)"} placeholder="Ion"
+                                value={first_name} onChange={(e) => setFirst_name(e.target.value)}/>
                         </InputGroup>
                     </Field.Root>
 
                     <Field.Root>
                         <Field.Label color={"var(--black)"}>Last Name</Field.Label>
                         <InputGroup flex={"1"} startElement={<Users size={"17px"}/>}>
-                            <Input color={"var(--black)"} placeholder="Popescu"/>
+                            <Input color={"var(--black)"} placeholder="Popescu"
+                                   value={last_name} onChange={(e) => setLast_name(e.target.value)}/>
                         </InputGroup>
                     </Field.Root>
 
@@ -70,7 +139,8 @@ export default function SignUp() {
                     <Field.Root>
                         <Field.Label color={"var(--black)"}>Email Address</Field.Label>
                         <InputGroup flex={"1"} startElement={<Mail size={"17px"}/>}>
-                            <Input color={"var(--black)"} placeholder="me@workly.com"/>
+                            <Input color={"var(--black)"} placeholder="me@workly.com"
+                                   value={email} onChange={(e) => setEmail(e.target.value)}/>
                         </InputGroup>
                     </Field.Root>
 
@@ -83,12 +153,17 @@ export default function SignUp() {
                                              transition="all 0.5s ease" _hover={{transform: "scale(1.5)"}}/> :
                                         <EyeClosed size={"17px"} cursor={"pointer"} onClick={handleClickPassword}
                                                    transition="all 0.5s ease" _hover={{transform: "scale(1.5)"}}/>}>
-                            <Input color={"var(--black)"} type={show ? "text" : "password"} placeholder="password"/>
+                            <Input color={"var(--black)"} type={show ? "text" : "password"} placeholder="password"
+                                   value={password} onChange={(e) => setPassword(e.target.value)}/>
                         </InputGroup>
                     </Field.Root>
 
 
-                    <Select.Root collection={roles} size="md" defaultValue={["Employee"]}>
+                    <Select.Root collection={roles}
+                                 value={role}
+                                 onValueChange={(e) =>
+                                 {const [firstElement] = e.value;
+                                     setRole(e.value)}} size="md">
                         <Select.HiddenSelect />
                         <Select.Label color={"var(--black)"} >Role</Select.Label>
 
@@ -96,7 +171,7 @@ export default function SignUp() {
                             <Select.Trigger>
                                 <HStack>
                                     <Users size={17} color={"gray"}/>
-                                <Select.ValueText color={"var(--black)"}  />
+                                <Select.ValueText color={"var(--black)"}/>
                                 </HStack>
                             </Select.Trigger>
 
@@ -110,7 +185,7 @@ export default function SignUp() {
                             <Select.Positioner>
                                 <Select.Content >
                                     {roles.items.map((role) => (
-                                        <Select.Item item={role} key={role.value}>
+                                        <Select.Item item={role} key={role.value} >
                                             {role.label}
                                             <Select.ItemIndicator />
                                         </Select.Item>
@@ -126,7 +201,8 @@ export default function SignUp() {
                         bg: "var(--primary-600)", transform: "translateY(1px)",
                         shadow: "sm",
                     }}
-                            textStyle={["md", "lg"]}>Sign Up</Button>
+                            textStyle={["md", "lg"]}
+                    onClick={handleSubmit}>Sign Up</Button>
 
                     <Flex align="center" justify="center" gap="3" w="full" my="6">
                         <Box flex="1" h="1px" bg="gray.400" />
