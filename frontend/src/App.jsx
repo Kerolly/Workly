@@ -6,6 +6,7 @@ import ProtectedRoute from "@/pages/components/ProtectedRoute.jsx";
 import Login from '@/pages/Login.jsx'
 import Signup from '@/pages/signup.jsx'
 import Profile from '@/pages/Profile.jsx'
+import EmployeeDashboard from "@/pages/EmployeeDashboard.jsx";
 
 function App() {
     const [count, setCount] = useState(0)
@@ -21,6 +22,12 @@ function App() {
                    element={
                 <ProtectedRoute>
                     <Profile/>
+                </ProtectedRoute>}/>
+
+            <Route path="/dashboard/employee/:employeeId"
+                   element={
+                <ProtectedRoute>
+                    <EmployeeDashboard/>
                 </ProtectedRoute>}/>
 
 
