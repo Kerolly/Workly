@@ -25,6 +25,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 @router.post("/register", response_model=UserOut)
 async def register_user(user: UserIn, db = Depends(get_db_connection)):
 
+    # check if user already exists
     user_repo = User(db)
     user_dict = await user_repo.get_user_for_auth(user.email)
     if user_dict is not None:
@@ -32,6 +33,8 @@ async def register_user(user: UserIn, db = Depends(get_db_connection)):
             status_code=409,
             detail="User already exists",
         )
+
+    #print("From register: ", user)
 
     hashed_password = hash_password(user.password)
 
