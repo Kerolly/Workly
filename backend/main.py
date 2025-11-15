@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.routers import dashboard_routers
 from backend.user import users_router
 from backend.auth import auth_routers
 from backend.user.user import User
@@ -27,6 +28,7 @@ app.add_middleware(
 
 app.include_router(users_router.router)
 app.include_router(auth_routers.router)
+app.include_router(dashboard_routers.router)
 
 @app.get("/")
 def index():

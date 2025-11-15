@@ -73,6 +73,23 @@ class User:
 
         return result
 
+    async def get_user_dashboard_by_id(self, user_id: int):
+        query = f"""
+        SELECT u.first_name, u.role, t.time_start, t.time_end, a.activity_name, hr.hourly_rate_gross
+        FROM {self.table} AS u JOIN timeentries AS t ON u.id = t.user_id 
+                               JOIN activities AS a ON a.id = t.activity_id
+                               JOIN hourlyrates AS hr ON u.id = hr.user_id and a.id = hr.activity_id
+                               
+        WHERE u.id = %s
+        """
+
+        async with self.conn.cursor() as cursor:
+            await cursor.execute(query,
+                                 (user_id,))
+            result = await cursor.fetchone()
+
+        return result
+
     async def get_all_users(self, limit: int = 100):
         query = f"""
             SELECT * FROM {self.table}
