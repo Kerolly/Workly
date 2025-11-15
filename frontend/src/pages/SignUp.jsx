@@ -12,7 +12,7 @@ import {
     Text,
     Field,
     VStack,
-    InputGroup, Portal, Select, createListCollection, HStack, Flex, Link
+    InputGroup, Portal, Select, createListCollection, HStack, Flex, Link, Alert
 } from "@chakra-ui/react";
 import {useNavigate} from "react-router";
 
@@ -36,8 +36,9 @@ export default function SignUp() {
     const [last_name, setLast_name] = useState("")
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [role, setRole] = useState("");
+    const [role, setRole] = useState("employee");
     const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     // create navigate
     const navigate = useNavigate();
@@ -46,6 +47,7 @@ export default function SignUp() {
     const handleSubmit = async (event) => {
         event.preventDefault(); // stop reloading page
         setError(null);
+        setIsLoading(true);
 
         // console.log("First name:", first_name);
         // console.log("Last name:", last_name);
@@ -93,6 +95,8 @@ export default function SignUp() {
 
             console.log("Registraion error: ", err);
             setError(err.message);
+        }finally {
+            setIsLoading(false);
         }
 
     }
@@ -103,12 +107,14 @@ export default function SignUp() {
              bgGradient="to-tr" minH="100vh" w="100%" gradientFrom="#e7f7fe" gradientTo="#e6f6ff"
             py={["70px", "90px"]}>
 
+            {/*--- Logo Section ---*/}
             <Box width={['90%', '400px']} gap={"4"} display={"flex"} alignItems={"center"} justifyContent={"center"}
                  mb={["50px", "55px"]}>
                 <img src={worklyIcon} alt="workly" width="14%" height="14%"/>
                 <Text color={"var(--black)"} textStyle={["2xl", "3xl"]} fontWeight="bold">Workly</Text>
             </Box>
 
+            {/*--- Signup Section ---*/}
             <Box width={['90%', '400px']} p={['24px', '32px']} bg="#FFFFFF"
                  rounded={"xl"} shadow={"0 4px 6px rgba(0,0,0,0.1), 0 10px 15px rgba(0,0,0,0.1)"}>
 
@@ -119,33 +125,36 @@ export default function SignUp() {
 
                 <VStack gap={"6"}>
 
-                    <Field.Root>
-                        <Field.Label color={"var(--black)"}>First Name</Field.Label>
+                    {/*--- First name Section ---*/}
+                    <Field.Root required>
+                        <Field.Label color={"var(--black)"}>First Name <Field.RequiredIndicator /></Field.Label>
                         <InputGroup flex={"1"} startElement={<User size={"17px"}/>}>
                             <Input color={"var(--black)"} placeholder="Ion"
-                                value={first_name} onChange={(e) => setFirst_name(e.target.value)}/>
+                                value={first_name} onChange={(e) => setFirst_name(e.target.value)} disabled={isLoading}/>
                         </InputGroup>
                     </Field.Root>
 
-                    <Field.Root>
-                        <Field.Label color={"var(--black)"}>Last Name</Field.Label>
+                    {/*--- Last name Section ---*/}
+                    <Field.Root required>
+                        <Field.Label color={"var(--black)"}>Last Name <Field.RequiredIndicator /></Field.Label>
                         <InputGroup flex={"1"} startElement={<Users size={"17px"}/>}>
                             <Input color={"var(--black)"} placeholder="Popescu"
-                                   value={last_name} onChange={(e) => setLast_name(e.target.value)}/>
+                                   value={last_name} onChange={(e) => setLast_name(e.target.value)} disabled={isLoading}/>
                         </InputGroup>
                     </Field.Root>
 
-
-                    <Field.Root>
-                        <Field.Label color={"var(--black)"}>Email Address</Field.Label>
+                    {/*--- Email Section ---*/}
+                    <Field.Root required>
+                        <Field.Label color={"var(--black)"}>Email Address <Field.RequiredIndicator /></Field.Label>
                         <InputGroup flex={"1"} startElement={<Mail size={"17px"}/>}>
                             <Input color={"var(--black)"} placeholder="me@workly.com"
-                                   value={email} onChange={(e) => setEmail(e.target.value)}/>
+                                   value={email} onChange={(e) => setEmail(e.target.value)} disabled={isLoading}/>
                         </InputGroup>
                     </Field.Root>
 
-                    <Field.Root>
-                        <Field.Label color={"var(--black)"}>Password</Field.Label>
+                    {/*--- Password Section ---*/}
+                    <Field.Root required>
+                        <Field.Label color={"var(--black)"}>Password <Field.RequiredIndicator /></Field.Label>
                         <InputGroup flex={"1"}
                                     startElement={<Lock size={"17px"}/>}
                                     endElement={show ?
@@ -154,18 +163,18 @@ export default function SignUp() {
                                         <EyeClosed size={"17px"} cursor={"pointer"} onClick={handleClickPassword}
                                                    transition="all 0.5s ease" _hover={{transform: "scale(1.5)"}}/>}>
                             <Input color={"var(--black)"} type={show ? "text" : "password"} placeholder="password"
-                                   value={password} onChange={(e) => setPassword(e.target.value)}/>
+                                   value={password} onChange={(e) => setPassword(e.target.value)} disabled={isLoading}/>
                         </InputGroup>
                     </Field.Root>
 
-
-                    <Select.Root collection={roles}
+                    {/*--- Role Section ---*/}
+                    <Select.Root required collection={roles} disabled={isLoading}
                                  value={role}
                                  onValueChange={(e) =>
                                  {const [firstElement] = e.value;
                                      setRole(e.value)}} size="md">
                         <Select.HiddenSelect />
-                        <Select.Label color={"var(--black)"} >Role</Select.Label>
+                        <Select.Label color={"var(--black)"} >Role </Select.Label>
 
                         <Select.Control>
                             <Select.Trigger>
@@ -195,7 +204,15 @@ export default function SignUp() {
                         </Portal>
                     </Select.Root>
 
+                    {/*--- Error Section ---*/}
+                    {error && (
+                        <Alert.Root status="error" size={"sm"} variant="solid">
+                            <Alert.Indicator />
+                            <Alert.Title>Please complete all fields</Alert.Title>
+                        </Alert.Root>
+                    )}
 
+                    {/*--- Button Section ---*/}
                     <Button mt={"10px"} w={"100%"} variant="subtle" type="submit"
                             bg={"var(--primary)"} _hover={{
                         bg: "var(--primary-600)", transform: "translateY(1px)",

@@ -11,7 +11,7 @@ import {
     Text,
     Field,
     VStack,
-    InputGroup, Flex, Link
+    InputGroup, Flex, Link, Alert
 } from "@chakra-ui/react";
 import {Link as RouterLink, useNavigate} from "react-router";
 
@@ -31,10 +31,15 @@ export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (event) => {
+
+
+
+        const handleSubmit = async (event) => {
         event.preventDefault(); // stop reloading page
         setError(null);
+        setIsLoading(true);
 
         console.log("Send ... ", {email, password});
 
@@ -64,8 +69,8 @@ export default function Login() {
             }
 
             // log the ath details
-            console.log("Authentication successful", data);
-            console.log("Access token: ", data.access_token);
+            //console.log("Authentication successful", data);
+            //console.log("Access token: ", data.access_token);
 
             // save the token to local storage (for the moment)
             localStorage.setItem("access_token", data.access_token);
@@ -81,6 +86,8 @@ export default function Login() {
             console.log("Auth error:", error.message);
             setError(error.message);
 
+        }finally {
+            setIsLoading(false);
         }
 
     }
@@ -92,28 +99,35 @@ export default function Login() {
              bgGradient="to-tr" minH="100vh" w="100%" gradientFrom="#e7f7fe" gradientTo="#e6f6ff"
              py={["70px", "90px"]}>
 
+            {/*--- Logo ---*/}
             <Box width={['90%', '400px']} gap={"4"} display={"flex"} alignItems={"center"} justifyContent={"center"}
                  mb={["50px", "55px"]}>
                 <img src={worklyIcon} alt="workly" width="14%" height="14%"/>
                 <Text color={"var(--black)"} textStyle={["2xl", "3xl"]} fontWeight="bold">Workly</Text>
             </Box>
 
+            {/*--- Login Section ---*/}
             <Box width={['90%', '400px']} p={['24px', '32px']} bg="#FFFFFF"
                  rounded={"xl"} shadow={"0 4px 6px rgba(0,0,0,0.1), 0 10px 15px rgba(0,0,0,0.1)"}>
                 <Text textAlign={"center"} textStyle={["xl", "2xl"]} fontWeight="bold" color="#21252C">Welcome to
                     Workly</Text>
                 <Text textAlign={"center"} textStyle="sm" fontWeight="light" color="#5C6470"
                       mb={["20px", "30px"]}>Sign in to your Workly account</Text>
+
+                {/*--- Inputs Section ---*/}
                 <VStack gap={"4"}>
-                    <Field.Root>
-                        <Field.Label color={"#21252C"}>Email Address</Field.Label>
+                    {/*--- Email Section ---*/}
+                    <Field.Root required>
+                        <Field.Label color={"#21252C"}>Email Address <Field.RequiredIndicator /></Field.Label>
                         <InputGroup flex={"1"} startElement={<Mail size={"17px"}/>}>
-                            <Input color={"var(--black)"} placeholder="me@workly.com"
-                                value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <Input color={"var(--black)"} placeholder="me@workly.com" type={"email"}
+                                value={email} onChange={(e) => setEmail(e.target.value)} disabled={isLoading}/>
                         </InputGroup>
                     </Field.Root>
-                    <Field.Root>
-                        <Field.Label color={"#21252C"}>Password</Field.Label>
+
+                    {/*--- Password Section ---*/}
+                    <Field.Root required>
+                        <Field.Label color={"#21252C"}>Password <Field.RequiredIndicator /></Field.Label>
                         <InputGroup flex={"1"}
                                     startElement={<Lock size={"17px"}/>}
                                     endElement={show ?
@@ -122,9 +136,19 @@ export default function Login() {
                                         <EyeClosed size={"17px"} cursor={"pointer"} onClick={handleClickPassword}
                                                    transition="all 0.5s ease" _hover={{transform: "scale(1.5)"}}/>}>
                             <Input color={"var(--black)"} type={show ? "text" : "password"} placeholder="password"
-                                value={password} onChange={(e) => setPassword(e.target.value)} />
+                                value={password} onChange={(e) => setPassword(e.target.value)} disabled={isLoading}/>
                         </InputGroup>
                     </Field.Root>
+
+                    {/*--- Error Section ---*/}
+                    {error && (
+                        <Alert.Root status="error" size={"sm"} variant="solid">
+                            <Alert.Indicator />
+                            <Alert.Title>Email or password is incorrect</Alert.Title>
+                        </Alert.Root>
+                    )}
+
+                    {/*--- Button Section ---*/}
                     <Button mt={"10px"} w={"100%"} variant="subtle" type="submit"
                             bg={"var(--primary)"} _hover={{
                         bg: "var(--primary-600)", transform: "translateY(1px)",
