@@ -10,18 +10,20 @@
     --primary-700: #1E345A;
 
     --accent: #00D4FF;
-    --accent-foreground: #FFF;
 
     --secondary: #00D4FF;
-    --secondary-foreground: #FFF;
 
-    --background: #FFF;
+    --background: #f8fafa;;
     --foreground: #1A2A3A;
 
     --border: #E5EBF3;
     --input: #F5F8FB;
 
     --black: #21252C;
+    --white: #FFFFFF;
+    --grey: #9e9e9e;
+    --grey-600: #7c7c7c;
+    --grey-700: #404040;
 
     /* Fonts */
     --font-main: 'Inter', sans-serif;
