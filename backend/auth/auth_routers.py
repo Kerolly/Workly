@@ -75,5 +75,5 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user_dict["email"]}, expires_delta=access_token_expires
     )
 
-
-    return {"access_token": access_token, "token_type": "bearer"}
+    #print("User role: ", user_dict["role"])
+    return {"id": user_dict["id"], "access_token": access_token, "token_type": "bearer", "role": user_dict["role"]}

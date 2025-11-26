@@ -13,6 +13,8 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    role: str
+    id: int
 
 # create the model for token data
 class TokenData(BaseModel):
