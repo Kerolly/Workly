@@ -3,6 +3,7 @@
 import Header from "@/pages/components/Header.jsx"
 import "@/styles/theme.css";
 import {
+    AbsoluteCenter,
     Box,
     Button,
     createListCollection,
@@ -11,24 +12,64 @@ import {
     Input,
     InputGroup,
     Portal,
-    Select,
+    Select, Spinner,
     Stack,
     Table,
     Text
 } from "@chakra-ui/react";
 import {useParams} from "react-router-dom";
-import {useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Calendar, Clock, Clock7, DollarSign, Plus, Trash2, TrendingUp} from "lucide-react"
+import {authFetch} from "@/apiClient.js";
 
 
 export default function EmployeeDashboard() {
 
-
-    const employeeId = useParams().employeeId;
-
     const dateInputRef = useRef(null)
     const startTimeInputRef = useRef(null)
     const endTimeInputRef = useRef(null)
+
+    // Fetch data from the server
+    const employeeId = useParams().employeeId;
+    const [dashboardData, setDashboardData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // run only once, when load the page
+    useEffect( () => {
+        const fetchEmployeeUserData = async () => {
+
+            try {
+                // getting the data from the server
+                const data = await authFetch("GET", `/dashboard/employee/${employeeId}`);
+                setDashboardData(data);
+
+            }catch(err){ // catch some errors
+                setError(err.message);
+                console.log(err);
+            }finally {
+                setIsLoading(false); // set the loading to false
+            }
+
+        };
+
+        fetchEmployeeUserData();
+
+    }, [])
+
+    if (!dashboardData){
+        return (
+            <Box bg={"var(--grey)"} minH="100vh">
+                <AbsoluteCenter>
+                    <Spinner size={"xl"} color={"var(--primary)"}/>
+                </AbsoluteCenter>
+            </Box>
+        )
+    }
+
+    console.log(dashboardData.user_info);
+
+
 
     const handleOpenPicker = (inputRef) => {
         if (inputRef.current) {
@@ -46,6 +87,7 @@ export default function EmployeeDashboard() {
         ],
     })
 
+    console.log(dashboardData.time_entries)
     const historyRecords = [
         {id: 1, date: "lun. 15 ian. 2025", activity: "Course", hours: 8.0, ratesHour: "45 RON", total: "360.00 RON"},
         {id: 2, date: "mar. 16 ian. 2025", activity: "Demo", hours: 2.5, ratesHour: "60 RON", total: "150.00 RON"},
@@ -63,6 +105,11 @@ export default function EmployeeDashboard() {
     ]
 
 
+
+
+
+
+
     return (
         // Header
         <>
@@ -76,8 +123,7 @@ export default function EmployeeDashboard() {
 
                     {/*--- Welcome Section ---*/}
                     <Box color={"var(--black)"} pt={["40px", "60px"]}>
-                        <Text textAlign={"start"} textStyle={["2xl", "3xl"]} fontWeight={"bold"}>Welcome,
-                            Andrei</Text>
+                        <Text textAlign={"start"} textStyle={["2xl", "3xl"]} fontWeight={"bold"}>Welcome, {dashboardData.user_info.first_name}</Text>
                         <Text textAlign={"start"} textStyle={["sm", "md"]} mt={"5px"}
                               color={"var(--grey-600)"}>Manage your timesheets and view salary information</Text>
                     </Box>
