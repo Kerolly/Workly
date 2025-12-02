@@ -87,22 +87,16 @@ export default function EmployeeDashboard() {
         ],
     })
 
-    console.log(dashboardData.time_entries)
-    const historyRecords = [
-        {id: 1, date: "lun. 15 ian. 2025", activity: "Course", hours: 8.0, ratesHour: "45 RON", total: "360.00 RON"},
-        {id: 2, date: "mar. 16 ian. 2025", activity: "Demo", hours: 2.5, ratesHour: "60 RON", total: "150.00 RON"},
-        {id: 3, date: "mie. 17 ian. 2025", activity: "Meeting", hours: 1.5, ratesHour: "30 RON", total: "45.00 RON"},
-        {id: 4, date: "joi 18 ian. 2025", activity: "Course", hours: 4.0, ratesHour: "45 RON", total: "180.00 RON"},
-        {
-            id: 5,
-            date: "vin. 19 ian. 2025",
-            activity: "Development",
-            hours: 6.0,
-            ratesHour: "50 RON",
-            total: "300.00 RON"
-        },
-        {id: 6, date: "lun. 22 ian. 2025", activity: "Demo", hours: 3.0, ratesHour: "60 RON", total: "180.00 RON"}
-    ]
+    //console.log(dashboardData.time_entries)
+
+    // Create an array with all the history records
+    const historyRecords = []
+    for(let i in dashboardData.time_entries){
+        //console.log("Entry: ", dashboardData.time_entries[i])
+        historyRecords.push(dashboardData.time_entries[i])
+    }
+
+    //console.log("Entry: ", historyRecords)
 
 
 
@@ -239,7 +233,7 @@ export default function EmployeeDashboard() {
                                  boxShadow="0px 4px 12px rgba(0, 0, 0, 0.08)">
                                 <Box width={"100%"} p={["10px", "20px"]}>
                                     <Text textAlign={"center"} color={"var(--primary)"} fontWeight={"bold"}
-                                          textStyle={"2xl"}>0.0</Text>
+                                          textStyle={"2xl"}>{dashboardData.total_hours.toFixed(1)}</Text>
                                     <Text textAlign={"center"} color={"var(--black)"} fontWeight={"normal"}
                                           textStyle={"md"}>Total Hours Worked</Text>
                                 </Box>
@@ -250,7 +244,7 @@ export default function EmployeeDashboard() {
                                  boxShadow="0px 4px 12px rgba(0, 0, 0, 0.08)">
                                 <Box width={"100%"} p={["10px", "20px"]}>
                                     <Text textAlign={"center"} color={"var(--accent)"} fontWeight={"bold"}
-                                          textStyle={"2xl"}>0.0</Text>
+                                          textStyle={"2xl"}>{dashboardData.total_gross_salary.toFixed(2)}</Text>
                                     <Text textAlign={"center"} color={"var(--black)"} fontWeight={"normal"}
                                           textStyle={"md"}>RON Estimative Gross</Text>
                                 </Box>
@@ -297,7 +291,7 @@ export default function EmployeeDashboard() {
                                     <Text color={"var(--black)"} fontWeight={"normal"} textStyle={"sm"}>Total worked
                                         hours:</Text>
                                     <Text color={"var(--black)"} fontWeight={"semibold"}
-                                          textStyle={"2xl"} mt={"10px"}>0.0</Text>
+                                          textStyle={"2xl"} mt={"10px"}>{dashboardData.total_hours.toFixed(1)}</Text>
                                     <Text color={"var(--black)"} fontWeight={"normal"} textStyle={"sm"}>Hours per
                                         month</Text>
                                 </Box>
@@ -317,7 +311,7 @@ export default function EmployeeDashboard() {
                                         salary
                                     </Text>
                                     <Text color={"var(--black)"} fontWeight={"semibold"}
-                                          textStyle={"2xl"} mt={"10px"}>0.0</Text>
+                                          textStyle={"2xl"} mt={"10px"}>{dashboardData.total_gross_salary.toFixed(2)}</Text>
                                     <Text color={"var(--black)"} fontWeight={"normal"} textStyle={"sm"}>RON per
                                         month</Text>
                                 </Box>
@@ -325,7 +319,7 @@ export default function EmployeeDashboard() {
                             </Box>
                         </Box>
 
-                        {/*--- Estimative gross salary per month Section ---*/}
+                        {/*--- Hourly Average Section ---*/}
                         <Box bg={"var(--white)"} rounded={"lg"} mt={["25px", "35px"]} flex={"1"}
                              boxShadow="0px 4px 12px rgba(0, 0, 0, 0.08)">
 
@@ -336,7 +330,7 @@ export default function EmployeeDashboard() {
                                     <Text color={"var(--black)"} fontWeight={"normal"} textStyle={"sm"}>Hourly average
                                     </Text>
                                     <Text color={"var(--black)"} fontWeight={"semibold"}
-                                          textStyle={"2xl"} mt={"10px"}>0.0</Text>
+                                          textStyle={"2xl"} mt={"10px"}>{dashboardData.hourly_average.toFixed(2)}</Text>
                                     <Text color={"var(--black)"} fontWeight={"normal"} textStyle={"sm"}>RON/hour</Text>
                                 </Box>
                                 <TrendingUp color={"var(--primary)"} size={"60px"}/>
@@ -373,11 +367,11 @@ export default function EmployeeDashboard() {
                             <Table.Body color={"var(--black)"}>
                                 {historyRecords.map((item) => (
                                     <Table.Row bg={"var(--white)"} key={item.id}>
-                                        <Table.Cell>{item.date}</Table.Cell>
-                                        <Table.Cell>{item.activity}</Table.Cell>
-                                        <Table.Cell>{item.hours}</Table.Cell>
-                                        <Table.Cell>{item.ratesHour}</Table.Cell>
-                                        <Table.Cell>{item.total}</Table.Cell>
+                                        <Table.Cell>{item.activity_date}</Table.Cell>
+                                        <Table.Cell>{item.activity_name}</Table.Cell>
+                                        <Table.Cell>{item.activity_hours}</Table.Cell>
+                                        <Table.Cell>{item.rate_hour} RON</Table.Cell>
+                                        <Table.Cell>{item.activity_total} RON</Table.Cell>
                                         <Table.Cell><Flex justify={"end"} width={"100%"}>
                                             <Trash2 size={"18px"} cursor={"pointer"}/>
                                         </Flex></Table.Cell>
