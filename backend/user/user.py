@@ -1,5 +1,5 @@
 # user.py
-from dns.e164 import query
+import datetime
 
 from backend.user.user_schema import UserIn, UserOut
 
@@ -98,7 +98,7 @@ class User:
             SELECT t.id, t.time_start, t.time_end, a.activity_name
             FROM timeentries AS t
                                 JOIN activities AS a ON t.activity_id = a.id
-            WHERE t.user_id = %s
+            WHERE t.user_id = %s AND DATE_TRUNC('month', t.time_start) = DATE_TRUNC('month', CURRENT_DATE)
             ORDER BY t.time_start DESC
             """
 
@@ -111,7 +111,7 @@ class User:
 
         # ==== Hourly Rates Query ===
         query_rates = f"""
-            SELECT hr.hourly_rate_gross, a.activity_name
+            SELECT hr.hourly_rate_gross, hr.activity_id, a.activity_name
             FROM hourlyrates AS hr
                                 JOIN activities AS a ON a.id = hr.activity_id
             WHERE hr.user_id = %s
@@ -124,15 +124,96 @@ class User:
             rates_rows = await cursor.fetchall()  # get all rates for the user
 
 
+
         # === Prepare the response ===
+
+        # === Rates map ===
+        rates_map = {}
+        for rate in rates_rows:
+            rates_map[rate["activity_name"]] = float(rate["hourly_rate_gross"])
+
+        #print(rates_map)
+
         entries_list = []
+        total_hours = 0.0
+
+        total_course_gross = 0.0
+        total_demo_gross = 0.0
+        total_meeting_gross = 0.0
+        total_make_up_lesson_gross = 0.0
+        total_other_gross = 0.0
+
         for row in entries_rows:
+
+            # === Calculate total hours worked ===
+            start = row["time_start"]
+            end = row["time_end"]
+            delta_time = (end - start).total_seconds() / 3600 # time for every row, means every activity
+            total_hours += delta_time
+            total_hours = round(total_hours, 1)
+
+
+            # === Calculate gross salary per activity ===
+
+            """
+            rates rows:
+            0 - Course
+            1 - Demo
+            2 - Meeting
+            3 - Make-up lesson
+            4 - Other
+            """
+
+            # === Course activity only ===
+            if row["activity_name"] == "Course":
+                total_course_gross += rates_map.get("Course", 0.0) * delta_time
+
+
+            # === Demo activity only ===
+            if row["activity_name"] == "Demo":
+                total_demo_gross += rates_map.get("Demo", 0.0) * delta_time
+                #print(total_demo_gross)
+
+
+            # === Meeting activity only ===
+            if row["activity_name"] == "Meeting":
+                total_meeting_gross += rates_map.get("Meeting", 0.0) * delta_time
+
+
+            # === Make-up lesson activity only ===
+            if row["activity_name"] == "Make-up lesson":
+                total_make_up_lesson_gross += rates_map.get("Make-up lesson", 0.0) * delta_time
+
+
+            # === Other activity only ===
+            if row["activity_name"] == "Other":
+             total_other_gross += rates_map.get("Other", 0.0) * delta_time
+
+
+            # === Prepare the history table Date/Activity/Hours/Rate_Hour/Total ===
+            activity_date = row["time_start"].strftime("%d %b %Y")
+
             entries_list.append({
                 "id": row["id"],
                 "time_start": row["time_start"],
                 "time_end": row["time_end"],
+                "activity_date": activity_date,
                 "activity_name": row["activity_name"],
+                "activity_hours": delta_time,
+                "rate_hour": rates_map.get(row["activity_name"], 0.0),
+                "activity_total": rates_map.get(row["activity_name"], 0.0) * delta_time
             })
+
+        # === Calculate total gross salary ===
+        total_gross_salary = (total_course_gross + total_demo_gross +
+                              total_meeting_gross + total_make_up_lesson_gross +
+                              total_other_gross)
+
+        # === Calculate hourly average
+        hourly_average = 0
+        hourly_average = total_gross_salary / total_hours
+
+        #print(total_gross_salary)
 
         dashboard_data = {
             "user_info": {
@@ -143,7 +224,10 @@ class User:
                 "role": user_row["role"]
             },
             "time_entries": entries_list, # empty list if no entries
-            "hourly_rates": rates_rows
+            "hourly_rates": rates_rows,
+            "total_hours": total_hours,
+            "total_gross_salary": total_gross_salary,
+            "hourly_average": hourly_average,
         }
 
         return dashboard_data
