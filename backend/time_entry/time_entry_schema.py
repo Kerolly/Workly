@@ -6,10 +6,9 @@ from typing import Optional
 
 # create the time_entry in model
 class TimeEntryIn(BaseModel):
-    user_id: int
-    activity_id: int
     time_start: datetime
     time_end: datetime
+    activity: str
 
 
 # create the time_entry out mode

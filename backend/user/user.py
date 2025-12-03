@@ -228,6 +228,7 @@ class User:
             "total_hours": total_hours,
             "total_gross_salary": total_gross_salary,
             "hourly_average": hourly_average,
+            "rates_map": rates_map,
         }
 
         return dashboard_data

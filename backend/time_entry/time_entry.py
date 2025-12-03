@@ -8,20 +8,36 @@ class TimeEntry:
         self.conn = conn
         self.table = "TimeEntries"
 
-    async def add_entry(self, entry_data: TimeEntryIn):
-        query = f"""
+    async def add_entry(self, user_id, entry_data: TimeEntryIn):
+
+        query_find_activity_id = f"""
+            SELECT id FROM activities WHERE activity_name = %s;
+        """
+
+        async with self.conn.cursor() as cursor:
+            await cursor.execute(query_find_activity_id,
+                           (entry_data.activity,))
+            result = await cursor.fetchone()
+
+            if not result:
+                print(f"Error: {entry_data.activity} is not a valid activity name.")
+                return None
+
+            activity_id = result["id"]
+
+        query_insert = f"""
             INSERT INTO {self.table} (user_id, activity_id, time_start, time_end)
             VALUES (%s, %s, %s, %s) RETURNING id;
             """
 
         async with self.conn.cursor() as cursor:
-            cursor.execute(query,
-                           (entry_data.user_id,
-                            entry_data.activity_id,
+            await cursor.execute(query_insert,
+                           (user_id,
+                            activity_id,
                             entry_data.time_start,
                             entry_data.time_end))
-            result = cursor.fetchone()
-            self.conn.commit()
+            result = await cursor.fetchone()
+            await self.conn.commit()
 
         return result
 
