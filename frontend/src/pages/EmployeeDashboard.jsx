@@ -15,7 +15,7 @@ import {
     Select, Spinner,
     Stack,
     Table,
-    Text
+    Text, Popover
 } from "@chakra-ui/react";
 import {useParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
@@ -34,6 +34,13 @@ export default function EmployeeDashboard() {
     const [dashboardData, setDashboardData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+
+
+    // --- Getting data from inputs ---
+    const [startTime, setStartTime] = useState("");
+    const [endTime, setEndTime] = useState("");
+    const [date, setDate] = useState("");
+    const [activity, setActivity] = useState("");
 
     // run only once, when load the page
     useEffect( () => {
@@ -67,7 +74,7 @@ export default function EmployeeDashboard() {
         )
     }
 
-    console.log(dashboardData.user_info);
+    //console.log(dashboardData.user_info);
 
 
 
@@ -82,7 +89,7 @@ export default function EmployeeDashboard() {
             {label: "Course", value: "Course"},
             {label: "Demo", value: "Demo"},
             {label: "Meeting", value: "Meeting"},
-            {label: "Make-up Class", value: "Make-up Class"},
+            {label: "Make-up lesson", value: "Make-up lesson"},
             {label: "Other", value: "Other"},
         ],
     })
@@ -96,11 +103,94 @@ export default function EmployeeDashboard() {
         historyRecords.push(dashboardData.time_entries[i])
     }
 
-    //console.log("Entry: ", historyRecords)
+    //console.log("Rates: ", dashboardData.rates_map["Course"])
 
 
 
 
+    const handleSubmit = async (event) => {
+        event.preventDefault(); // stop reloading page
+        setError(null);
+        setIsLoading(true);
+
+        console.log("Start time: ", startTime);
+        console.log("End time: ", endTime);
+        console.log("Date: ", date);
+        console.log("Activity: ", activity);
+        console.log("Time: ", calculateHours(startTime, endTime, date));
+
+        const data = {
+            time_start: `${date}T${startTime}`,
+            time_end: `${date}T${endTime}`,
+            activity: activity[0],
+
+        }
+
+        try{
+            setIsLoading(true)
+            // send the date to the server
+            const response = await authFetch("POST", "/dashboard/employee/time-entry", data);
+            window.location.reload(); //reload the page
+
+            console.log("Saved successfully: ", response);
+            alert("Recorded successfully!");
+
+        } catch(err){
+            console.log(err);
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+
+
+    }
+
+    const calculateHours = (startTime, endTime, date) => {
+        const startFull = new Date(`${date}T${startTime}`);
+        const endFull = new Date(`${date}T${endTime}`);
+
+
+        const diffInMs = endFull - startFull;
+        const diffInHours = diffInMs / (1000 * 60 * 60);
+
+        return diffInHours.toFixed(2);
+    }
+
+    const getHourlyRates = (activity) => {
+        if (activity === ""){
+            return 0.00;
+        }
+
+        return dashboardData.rates_map[activity];
+    }
+
+    const handleDeleteRecord = () => {
+        console.log("Delete record clicked");
+
+        return(
+            <Popover.Root lazyMount unmountOnExit>
+                <Popover.Trigger asChild>
+                    <Button size="sm" variant="outline">
+                        Click me
+                    </Button>
+                </Popover.Trigger>
+                <Portal>
+                    <Popover.Positioner>
+                        <Popover.Content>
+                            <Popover.Arrow />
+                            <Popover.Body>
+                                <Popover.Title fontWeight="medium">Naruto Form</Popover.Title>
+                                <Text my="4">
+                                    Naruto is a Japanese manga series written and illustrated by
+                                    Masashi Kishimoto.
+                                </Text>
+                            </Popover.Body>
+                        </Popover.Content>
+                    </Popover.Positioner>
+                </Portal>
+            </Popover.Root>
+        )
+    }
 
 
 
@@ -141,7 +231,8 @@ export default function EmployeeDashboard() {
                                         <InputGroup
                                             endElement={<Clock onClick={() => handleOpenPicker(startTimeInputRef)}
                                                                color="var(--primary)" cursor={"pointer"}/>}>
-                                            <Input type={"time"} ref={startTimeInputRef}/>
+                                            <Input type={"time"} ref={startTimeInputRef}
+                                            value={startTime} onChange={(e) => setStartTime(e.target.value)}/>
                                         </InputGroup>
                                     </Field.Root>
 
@@ -151,7 +242,8 @@ export default function EmployeeDashboard() {
                                         <InputGroup
                                             endElement={<Clock7 onClick={() => handleOpenPicker(endTimeInputRef)}
                                                                 color="var(--primary)" cursor={"pointer"}/>}>
-                                            <Input type={"time"} ref={endTimeInputRef}/>
+                                            <Input type={"time"} ref={endTimeInputRef}
+                                            value={endTime} onChange={(e) => setEndTime(e.target.value)}/>
                                         </InputGroup>
                                     </Field.Root>
 
@@ -164,14 +256,15 @@ export default function EmployeeDashboard() {
                                         <Field.Label>Date <Field.RequiredIndicator/></Field.Label>
                                         <InputGroup endElement={<Calendar onClick={() => handleOpenPicker(dateInputRef)}
                                                                           color="var(--primary)" cursor={"pointer"}/>}>
-                                            <Input type={"date"} ref={dateInputRef}/>
+                                            <Input type={"date"} ref={dateInputRef}
+                                            value={date} onChange={(e) => setDate(e.target.value)}/>
                                         </InputGroup>
                                     </Field.Root>
 
                                     <Field.Root color={"var(--black)"}>
                                         <Field.Label>Total Hours</Field.Label>
                                         <InputGroup endElement={<Clock color="var(--primary)"/>}>
-                                            <Input disabled type={"text"}/>
+                                            <Input disabled type={"text"} placeholder={calculateHours(startTime, endTime, date)+" h"}/>
                                         </InputGroup>
                                     </Field.Root>
 
@@ -180,7 +273,10 @@ export default function EmployeeDashboard() {
                                 {/*--- Job-Pay Section ---*/}
                                 <Stack direction={{base: "column", md: "row"}} gap={10} mt={"30px"}>
 
-                                    <Select.Root collection={activities} size="sm">
+                                    <Select.Root collection={activities} size="sm"
+                                                 value={activity}
+                                                 onValueChange={(e) =>
+                                                 {setActivity(e.value)}} >
                                         <Select.HiddenSelect/>
                                         <Select.Label>Select Activity</Select.Label>
                                         <Select.Control>
@@ -210,7 +306,7 @@ export default function EmployeeDashboard() {
                                     <Field.Root color={"var(--black)"}>
                                         <Field.Label>Hourly Rates</Field.Label>
                                         <InputGroup endElement={<DollarSign color="var(--primary)"/>}>
-                                            <Input disabled type={"text"}/>
+                                            <Input disabled type={"text"} placeholder={getHourlyRates(activity)+" RON"}/>
                                         </InputGroup>
                                     </Field.Root>
 
@@ -220,7 +316,7 @@ export default function EmployeeDashboard() {
                                         bg={"var(--primary)"} _hover={{
                                     bg: "var(--primary-600)", transform: "translateY(1px)",
                                     shadow: "sm",
-                                }} textStyle={["md", "lg"]}><Plus/>Record Time</Button>
+                                }} textStyle={["md", "lg"]} onClick={handleSubmit}><Plus/>Record Time</Button>
 
                             </Box>
                         </Box>
@@ -373,7 +469,24 @@ export default function EmployeeDashboard() {
                                         <Table.Cell>{item.rate_hour} RON</Table.Cell>
                                         <Table.Cell>{item.activity_total} RON</Table.Cell>
                                         <Table.Cell><Flex justify={"end"} width={"100%"}>
-                                            <Trash2 size={"18px"} cursor={"pointer"}/>
+
+                                            <Popover.Root lazyMount unmountOnExit>
+                                                <Popover.Trigger asChild>
+                                                    <Trash2 size={"18px"} cursor={"pointer"}/>
+                                                </Popover.Trigger>
+                                                <Portal>
+                                                    <Popover.Positioner>
+                                                        <Popover.Content>
+                                                            <Popover.Arrow />
+                                                            <Popover.Body>
+                                                                <Popover.Title fontWeight="medium">Are you sure?</Popover.Title>
+                                                                <Button size={"sm"}  onClick={handleDeleteRecord}>Yes</Button>
+                                                            </Popover.Body>
+                                                        </Popover.Content>
+                                                    </Popover.Positioner>
+                                                </Portal>
+                                            </Popover.Root>
+
                                         </Flex></Table.Cell>
                                     </Table.Row>
                                 ))}
