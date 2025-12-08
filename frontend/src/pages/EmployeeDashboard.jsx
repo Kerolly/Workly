@@ -164,32 +164,27 @@ export default function EmployeeDashboard() {
         return dashboardData.rates_map[activity];
     }
 
-    const handleDeleteRecord = () => {
+    const handleDeleteRecord = async(idActivity) => {
         console.log("Delete record clicked");
 
-        return(
-            <Popover.Root lazyMount unmountOnExit>
-                <Popover.Trigger asChild>
-                    <Button size="sm" variant="outline">
-                        Click me
-                    </Button>
-                </Popover.Trigger>
-                <Portal>
-                    <Popover.Positioner>
-                        <Popover.Content>
-                            <Popover.Arrow />
-                            <Popover.Body>
-                                <Popover.Title fontWeight="medium">Naruto Form</Popover.Title>
-                                <Text my="4">
-                                    Naruto is a Japanese manga series written and illustrated by
-                                    Masashi Kishimoto.
-                                </Text>
-                            </Popover.Body>
-                        </Popover.Content>
-                    </Popover.Positioner>
-                </Portal>
-            </Popover.Root>
-        )
+        setError(null);
+        setIsLoading(true);
+
+        try{
+
+            // send delete method
+            const response = await authFetch("DELETE", `/dashboard/employee/time-entry/${idActivity}`);
+
+            console.log("Delete successful: ", response);
+            window.location.reload();
+        }catch(err){
+            console.log("There were some errors: ", err.message);
+            setError(err.message);
+        }finally {
+            setIsLoading(false);
+        }
+
+
     }
 
 
@@ -470,17 +465,18 @@ export default function EmployeeDashboard() {
                                         <Table.Cell>{item.activity_total} RON</Table.Cell>
                                         <Table.Cell><Flex justify={"end"} width={"100%"}>
 
-                                            <Popover.Root lazyMount unmountOnExit>
+                                            <Popover.Root lazyMount unmountOnExit closeOnEscape={true} closeOnInteractOutside={true}>
                                                 <Popover.Trigger asChild>
                                                     <Trash2 size={"18px"} cursor={"pointer"}/>
                                                 </Popover.Trigger>
                                                 <Portal>
                                                     <Popover.Positioner>
-                                                        <Popover.Content>
+                                                        <Popover.Content width={"auto"} css={{"--popover-bg": "var(--primary)"}}>
                                                             <Popover.Arrow />
-                                                            <Popover.Body>
+                                                            <Popover.Body display={"flex"} flexDirection={"column"} alignItems={"center"}>
                                                                 <Popover.Title fontWeight="medium">Are you sure?</Popover.Title>
-                                                                <Button size={"sm"}  onClick={handleDeleteRecord}>Yes</Button>
+                                                                <Button size={"sm"} mt={"10px"} onClick={() => {handleDeleteRecord(item.id)}}
+                                                                >Yes</Button>
                                                             </Popover.Body>
                                                         </Popover.Content>
                                                     </Popover.Positioner>
