@@ -38,3 +38,9 @@ async def create_time_entry(entry: TimeEntryIn, current_user:UserOut = Depends(g
         raise HTTPException(status_code=400, detail="Time entry not created!")
 
     return {"message": "Time entry created successfully!", "id": response}
+
+
+@router.delete("/employee/time-entry/{entry_id}")
+def delete_time_entry(entry_id: int, current_user: UserOut = Depends(get_current_active_user), db=Depends(get_db_connection)):
+    print("User: ", current_user)
+    print("Entry id: ", entry_id)

@@ -41,6 +41,14 @@ class TimeEntry:
 
         return result
 
+
+
+    async def delete_entry(self, entry_id: int, user_id: int):
+        query = f"""
+            
+            """
+
+
     async def get_entry_by_id(self, entry_id: int):
         query = f"""
             SELECT * FROM {self.table}
