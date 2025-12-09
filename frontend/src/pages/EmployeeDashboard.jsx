@@ -15,7 +15,7 @@ import {
     Select, Spinner,
     Stack,
     Table,
-    Text, Popover
+    Text, Popover, Alert
 } from "@chakra-ui/react";
 import {useParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
@@ -34,32 +34,49 @@ export default function EmployeeDashboard() {
     const [dashboardData, setDashboardData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [successMsg, setSuccessMsg] = useState(null);
 
+
+
+    const getDefaultTime = (add = 0) =>{
+
+        const now = new Date();
+
+        let hour = (now.getHours() + add) % 24;
+
+        const hourString = hour.toString().padStart(2, "0"); // From 9 -> 09
+
+        return `${hourString}:00`;
+    }
 
     // --- Getting data from inputs ---
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
+    const [startTime, setStartTime] = useState(getDefaultTime(0));
+    const [endTime, setEndTime] = useState(getDefaultTime(1));
     const [date, setDate] = useState("");
     const [activity, setActivity] = useState("");
+
+
+    // load data function
+    const loadData = async () =>{
+        try{
+            // getting the data from the server
+            const data = await authFetch("GET", `/dashboard/employee/${employeeId}`);
+            setDashboardData(data);
+        }catch (err){
+            console.log("[Fetch ERROR]: ", err.message);
+            setError(err.message);
+        }
+
+    }
 
     // run only once, when load the page
     useEffect( () => {
         const fetchEmployeeUserData = async () => {
 
-            try {
-                // getting the data from the server
-                const data = await authFetch("GET", `/dashboard/employee/${employeeId}`);
-                setDashboardData(data);
-
-            }catch(err){ // catch some errors
-                setError(err.message);
-                console.log(err);
-            }finally {
-                setIsLoading(false); // set the loading to false
-            }
+            setIsLoading(true);
+            loadData().finally(() => setIsLoading(false)); // set the loading to false
 
         };
-
         fetchEmployeeUserData();
 
     }, [])
@@ -130,10 +147,14 @@ export default function EmployeeDashboard() {
             setIsLoading(true)
             // send the date to the server
             const response = await authFetch("POST", "/dashboard/employee/time-entry", data);
-            window.location.reload(); //reload the page
 
-            console.log("Saved successfully: ", response);
-            alert("Recorded successfully!");
+            setSuccessMsg("Time recorded successfully!");
+            await loadData(); //reload the page
+
+            setTimeout(() => setSuccessMsg(null), 5000)
+            //console.log("Saved successfully: ", response);
+            //alert("Recorded successfully!");
+
 
         } catch(err){
             console.log(err);
@@ -144,6 +165,8 @@ export default function EmployeeDashboard() {
 
 
     }
+
+
 
     const calculateHours = (startTime, endTime, date) => {
         const startFull = new Date(`${date}T${startTime}`);
@@ -268,7 +291,7 @@ export default function EmployeeDashboard() {
                                 {/*--- Job-Pay Section ---*/}
                                 <Stack direction={{base: "column", md: "row"}} gap={10} mt={"30px"}>
 
-                                    <Select.Root collection={activities} size="sm"
+                                    <Select.Root required collection={activities} size="sm"
                                                  value={activity}
                                                  onValueChange={(e) =>
                                                  {setActivity(e.value)}} >
@@ -307,7 +330,23 @@ export default function EmployeeDashboard() {
 
                                 </Stack>
 
-                                <Button mt={["30px", "50px"]} w={"100%"} variant="subtle" type="submit"
+                                {/*--- Error Section ---*/}
+                                {error && (
+                                    <Alert.Root mt={"20px"} status="error" size={"sm"} variant="solid">
+                                        <Alert.Indicator />
+                                        <Alert.Title>Please complete all fields</Alert.Title>
+                                    </Alert.Root>
+                                )}
+
+                                {/*--- Success Section ---*/}
+                                {successMsg && (
+                                    <Alert.Root mt={"20px"} status="success" size={"sm"} variant="solid">
+                                        <Alert.Indicator />
+                                        <Alert.Title>{successMsg}</Alert.Title>
+                                    </Alert.Root>
+                                )}
+
+                                <Button mt={["20px", "30px"]} w={"100%"} variant="subtle" type="submit"
                                         bg={"var(--primary)"} _hover={{
                                     bg: "var(--primary-600)", transform: "translateY(1px)",
                                     shadow: "sm",
