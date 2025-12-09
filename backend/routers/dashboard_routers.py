@@ -41,6 +41,14 @@ async def create_time_entry(entry: TimeEntryIn, current_user:UserOut = Depends(g
 
 
 @router.delete("/employee/time-entry/{entry_id}")
-def delete_time_entry(entry_id: int, current_user: UserOut = Depends(get_current_active_user), db=Depends(get_db_connection)):
+async def delete_time_entry(entry_id: int, current_user: UserOut = Depends(get_current_active_user), db=Depends(get_db_connection)):
     print("User: ", current_user)
     print("Entry id: ", entry_id)
+
+    time_entry_repo = TimeEntry(db)
+    response = await time_entry_repo.delete_entry(entry_id, current_user.id)
+
+    if not response:
+        raise HTTPException(status_code=400, detail="Time entry not deleted!")
+
+    return {"message": "Time entry deleted successfully!"}

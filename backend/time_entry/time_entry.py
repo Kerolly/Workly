@@ -45,9 +45,20 @@ class TimeEntry:
 
     async def delete_entry(self, entry_id: int, user_id: int):
         query = f"""
-            
+            DELETE FROM {self.table}
+            WHERE user_id = %s AND id = %s;
             """
 
+        try:
+            async with self.conn.cursor() as cursor:
+                await cursor.execute(query,
+                                     (user_id, entry_id),)
+
+                await self.conn.commit()
+        except Exception as e:
+            print("[DELETE ERROR]: ", e)
+
+        return "ok"
 
     async def get_entry_by_id(self, entry_id: int):
         query = f"""
