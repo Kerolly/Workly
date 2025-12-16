@@ -11,12 +11,11 @@ from backend.utils.database import get_db_connection
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
-@router.get("/employee/{user_id}")
-async def get_employee_dashboard(user_id: int, current_user: UserOut = Depends(get_current_active_user), db=Depends(get_db_connection)):
+@router.get("/employee")
+async def get_employee_dashboard(current_user: UserOut = Depends(get_current_active_user), db=Depends(get_db_connection)):
 
-    #print("User id: ", user_id)
     user_repo = User(db)
-    user_data = await user_repo.get_user_dashboard_by_id(user_id)
+    user_data = await user_repo.get_user_dashboard_by_id(current_user.id)
 
     if user_data is None:
         raise HTTPException(
@@ -27,8 +26,8 @@ async def get_employee_dashboard(user_id: int, current_user: UserOut = Depends(g
 
 @router.post("/employee/time-entry")
 async def create_time_entry(entry: TimeEntryIn, current_user:UserOut = Depends(get_current_active_user), db=Depends(get_db_connection)):
-    print("User: ", current_user)
-    print("Entry: ", entry.time_start)
+    # print("User: ", current_user)
+    # print("Entry: ", entry.time_start)
 
     time_entry_repo = TimeEntry(db)
 
@@ -36,6 +35,9 @@ async def create_time_entry(entry: TimeEntryIn, current_user:UserOut = Depends(g
 
     if not response:
         raise HTTPException(status_code=400, detail="Time entry not created!")
+
+    if response == "Entry already exists!":
+        raise HTTPException(status_code=409, detail=response)
 
     return {"message": "Time entry created successfully!", "id": response}
 
