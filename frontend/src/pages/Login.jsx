@@ -79,9 +79,9 @@ export default function Login() {
             //alert("Authentication successful");
             //console.log("Id: ", data.id);
             if(data.role === "manager"){
-                navigate(`/dashboard/employee/${data.id}`);
+                navigate(`/dashboard/employee`);
             }else{
-                navigate(`/dashboard/employee/${data.id}`);
+                navigate(`/dashboard/employee`);
             }
 
 
