@@ -16,13 +16,13 @@ export async function authFetch(method, endpoint, body=null) {
     // getting the token from local storage
     const token = localStorage.getItem("access_token");
 
-    // creating the headers object
+    // creating the header object
     const headers = new Headers();
 
-    // add the content type for json
+    // add the content type for JSON
     headers.append("Content-Type", "application/json");
 
-    // add the token to header
+    // add the token to the header
     if (token) {
         headers.append("Authorization", `Bearer ${token}`);
     }
