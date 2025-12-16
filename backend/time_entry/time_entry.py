@@ -25,6 +25,23 @@ class TimeEntry:
 
             activity_id = result["id"]
 
+        # Check if entry already exists
+        query_check_entry = f"""
+                    SELECT id FROM {self.table}
+                    WHERE user_id = %s AND time_start < %s AND time_end > %s
+                    """
+
+        async with self.conn.cursor() as cursor:
+            await cursor.execute(query_check_entry,
+                                  (user_id,
+                                   entry_data.time_end,
+                                   entry_data.time_start))
+            result = await cursor.fetchone()
+
+            if result:
+                print("[Error]: Entry already exists!")
+                return "Entry already exists!"
+
         query_insert = f"""
             INSERT INTO {self.table} (user_id, activity_id, time_start, time_end)
             VALUES (%s, %s, %s, %s) RETURNING id;
