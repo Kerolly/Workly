@@ -1,6 +1,6 @@
 // EmployeeDashboard.jsx
 
-import Header from "@/pages/components/Header.jsx"
+import Header from "@/components/Header.jsx"
 import "@/styles/theme.css";
 import {
     AbsoluteCenter,
@@ -15,12 +15,14 @@ import {
     Select, Spinner,
     Stack,
     Table,
-    Text, Popover, Alert
+    Text, Popover, Alert, Pagination, IconButton, ButtonGroup
 } from "@chakra-ui/react";
 import {useParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import {Calendar, Clock, Clock7, DollarSign, Plus, Trash2, TrendingUp} from "lucide-react"
 import {authFetch} from "@/apiClient.js";
+import {calculateHours, getHourlyRates, roundTimeQuarterHour} from "@/pages/dashboard/utils/hoursHandler.js";
+import {LuChevronLeft, LuChevronRight} from "react-icons/lu";
 
 
 export default function EmployeeDashboard() {
@@ -30,11 +32,13 @@ export default function EmployeeDashboard() {
     const endTimeInputRef = useRef(null)
 
     // Fetch data from the server
-    const employeeId = useParams().employeeId;
     const [dashboardData, setDashboardData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
+
+    // Pagination
+    const [page, setPage] = useState(1);
 
 
 
@@ -49,18 +53,31 @@ export default function EmployeeDashboard() {
         return `${hourString}:00`;
     }
 
+
+    const getCurrentDate = () => {
+        const today = new Date();
+
+        const day = String(today.getDate()).padStart(2, "0");
+        const month = String((today.getMonth() + 1)).padStart(2, "0");
+        const year = today.getFullYear();
+
+        //console.log(`${year}-${month}-${day}`)
+        return `${year}-${month}-${day}`;
+
+    }
+
     // --- Getting data from inputs ---
-    const [startTime, setStartTime] = useState(getDefaultTime(0));
-    const [endTime, setEndTime] = useState(getDefaultTime(1));
-    const [date, setDate] = useState("");
-    const [activity, setActivity] = useState("");
+    const [startTime, setStartTime] = useState(""); //getDefaultTime(-2)
+    const [endTime, setEndTime] = useState(getDefaultTime(0));
+    const [date, setDate] = useState(getCurrentDate());
+    const [activity, setActivity] = useState([]);
 
 
     // load data function
     const loadData = async () =>{
         try{
             // getting the data from the server
-            const data = await authFetch("GET", `/dashboard/employee/${employeeId}`);
+            const data = await authFetch("GET", `/dashboard/employee`);
             setDashboardData(data);
         }catch (err){
             console.log("[Fetch ERROR]: ", err.message);
@@ -120,21 +137,44 @@ export default function EmployeeDashboard() {
         historyRecords.push(dashboardData.time_entries[i])
     }
 
+    // Pagination
+    const pageSize = 5;
+    const startPage = (page - 1) * pageSize;
+    const endPage = startPage + pageSize;
+    const visibleHistoryRecords = historyRecords.slice(startPage, endPage);
+
     //console.log("Rates: ", dashboardData.rates_map["Course"])
 
 
-
+    const checkInputs = () =>{
+        if (startTime === "" || endTime === "" || date === "" || activity[0] === ""){
+            return false;
+        }
+        return true;
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // stop reloading page
         setError(null);
         setIsLoading(true);
 
-        console.log("Start time: ", startTime);
-        console.log("End time: ", endTime);
-        console.log("Date: ", date);
-        console.log("Activity: ", activity);
-        console.log("Time: ", calculateHours(startTime, endTime, date));
+        // console.log("Start time: ", startTime);
+        // console.log("End time: ", endTime);
+        // console.log("Date: ", date);
+        // console.log("Activity: ", activity);
+        // console.log("Time: ", calculateHours(startTime, endTime, date));
+
+        // check if all inputs are filled
+        if (checkInputs() === false){
+            setError("Please fill all the inputs!");
+            return
+        }
+
+        // check if the time is valid
+        if (calculateHours(startTime, endTime, date).error != null){
+            setError(calculateHours(startTime, endTime, date).error);
+            return
+        }
 
         const data = {
             time_start: `${date}T${startTime}`,
@@ -148,9 +188,18 @@ export default function EmployeeDashboard() {
             // send the date to the server
             const response = await authFetch("POST", "/dashboard/employee/time-entry", data);
 
+            // set a success message
             setSuccessMsg("Time recorded successfully!");
-            await loadData(); //reload the page
 
+            // empty the inputs
+            setStartTime(""); //getDefaultTime(-2)
+            setEndTime(getDefaultTime(0));
+            setDate(getCurrentDate());
+            setActivity([]);
+            await loadData(); //reload only the data
+
+
+            // set a timer for success message, 5s
             setTimeout(() => setSuccessMsg(null), 5000)
             //console.log("Saved successfully: ", response);
             //alert("Recorded successfully!");
@@ -168,24 +217,7 @@ export default function EmployeeDashboard() {
 
 
 
-    const calculateHours = (startTime, endTime, date) => {
-        const startFull = new Date(`${date}T${startTime}`);
-        const endFull = new Date(`${date}T${endTime}`);
 
-
-        const diffInMs = endFull - startFull;
-        const diffInHours = diffInMs / (1000 * 60 * 60);
-
-        return diffInHours.toFixed(2);
-    }
-
-    const getHourlyRates = (activity) => {
-        if (activity === ""){
-            return 0.00;
-        }
-
-        return dashboardData.rates_map[activity];
-    }
 
     const handleDeleteRecord = async(idActivity) => {
         console.log("Delete record clicked");
@@ -209,6 +241,8 @@ export default function EmployeeDashboard() {
 
 
     }
+
+
 
 
 
@@ -260,7 +294,7 @@ export default function EmployeeDashboard() {
                                         <InputGroup
                                             endElement={<Clock7 onClick={() => handleOpenPicker(endTimeInputRef)}
                                                                 color="var(--primary)" cursor={"pointer"}/>}>
-                                            <Input type={"time"} ref={endTimeInputRef}
+                                            <Input type={"time"} ref={endTimeInputRef} step={"900"}
                                             value={endTime} onChange={(e) => setEndTime(e.target.value)}/>
                                         </InputGroup>
                                     </Field.Root>
@@ -282,7 +316,7 @@ export default function EmployeeDashboard() {
                                     <Field.Root color={"var(--black)"}>
                                         <Field.Label>Total Hours</Field.Label>
                                         <InputGroup endElement={<Clock color="var(--primary)"/>}>
-                                            <Input disabled type={"text"} placeholder={calculateHours(startTime, endTime, date)+" h"}/>
+                                            <Input disabled type={"text"} placeholder={calculateHours(startTime, endTime, date).hours+" h"}/>
                                         </InputGroup>
                                     </Field.Root>
 
@@ -324,7 +358,7 @@ export default function EmployeeDashboard() {
                                     <Field.Root color={"var(--black)"}>
                                         <Field.Label>Hourly Rates</Field.Label>
                                         <InputGroup endElement={<DollarSign color="var(--primary)"/>}>
-                                            <Input disabled type={"text"} placeholder={getHourlyRates(activity)+" RON"}/>
+                                            <Input disabled type={"text"} placeholder={getHourlyRates(dashboardData, activity)+" RON"}/>
                                         </InputGroup>
                                     </Field.Root>
 
@@ -334,7 +368,7 @@ export default function EmployeeDashboard() {
                                 {error && (
                                     <Alert.Root mt={"20px"} status="error" size={"sm"} variant="solid">
                                         <Alert.Indicator />
-                                        <Alert.Title>Please complete all fields</Alert.Title>
+                                        <Alert.Title>{error}</Alert.Title>
                                     </Alert.Root>
                                 )}
 
@@ -480,7 +514,8 @@ export default function EmployeeDashboard() {
                         <Calendar color={"var(--primary)"}/>History Records</Heading>
 
 
-                    <Table.ScrollArea rounded="md" height="260px">
+
+                        <Stack>
                         <Table.Root size="sm" stickyHeader>
                             <Table.Header>
                                 <Table.Row bg="var(--white)">
@@ -495,7 +530,7 @@ export default function EmployeeDashboard() {
                             </Table.Header>
 
                             <Table.Body color={"var(--black)"}>
-                                {historyRecords.map((item) => (
+                                {visibleHistoryRecords.map((item) => (
                                     <Table.Row bg={"var(--white)"} key={item.id}>
                                         <Table.Cell>{item.activity_date}</Table.Cell>
                                         <Table.Cell>{item.activity_name}</Table.Cell>
@@ -527,7 +562,36 @@ export default function EmployeeDashboard() {
                                 ))}
                             </Table.Body>
                         </Table.Root>
-                    </Table.ScrollArea>
+
+                            <Pagination.Root count={historyRecords.length} pageSize={pageSize} page={page}
+                                onPageChange={(e) => setPage(e.page)}>
+                                <ButtonGroup variant="ghost" size="sm" wrap="wrap">
+                                    <Pagination.PrevTrigger asChild>
+                                        <IconButton>
+                                            <LuChevronLeft />
+                                        </IconButton>
+                                    </Pagination.PrevTrigger>
+
+                                    <Pagination.Items
+                                        render={(page) => (
+                                            <IconButton color={{ base: "var(--primary)", _hover: "var(--white)" }}
+                                                        bg={{base: "ghost", _hover: "var(--primary)"}}>
+                                                {page.value}
+                                            </IconButton>
+                                        )}
+                                    />
+
+                                    <Pagination.NextTrigger asChild>
+                                        <IconButton>
+                                            <LuChevronRight />
+                                        </IconButton>
+                                    </Pagination.NextTrigger>
+                                </ButtonGroup>
+                            </Pagination.Root>
+
+                        </Stack>
+
+
 
 
                 </Box>
