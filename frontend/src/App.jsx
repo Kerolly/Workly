@@ -1,12 +1,12 @@
 import {useState} from 'react'
 import {Route, Routes} from "react-router-dom";
 
-import ProtectedRoute from "@/pages/components/ProtectedRoute.jsx";
+import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 
 import Login from '@/pages/Login.jsx'
 import Signup from '@/pages/signup.jsx'
 import Profile from '@/pages/Profile.jsx'
-import EmployeeDashboard from "@/pages/EmployeeDashboard.jsx";
+import EmployeeDashboard from "@/pages/dashboard/EmployeeDashboard.jsx";
 
 function App() {
     const [count, setCount] = useState(0)
@@ -24,7 +24,7 @@ function App() {
                     <Profile/>
                 </ProtectedRoute>}/>
 
-            <Route path="/dashboard/employee/:employeeId"
+            <Route path="/dashboard/employee"
                    element={
                 <ProtectedRoute>
                     <EmployeeDashboard/>
