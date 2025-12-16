@@ -211,7 +211,7 @@ class User:
 
         # === Calculate hourly average
         hourly_average = 0
-        hourly_average = total_gross_salary / total_hours
+        hourly_average = total_gross_salary / total_hours if total_hours > 0 else 0
 
         #print(total_gross_salary)
 
