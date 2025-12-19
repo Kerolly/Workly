@@ -52,7 +52,7 @@ export default function Login() {
 
 
             // send the data to server
-            const response = await fetch('http://127.0.0.1:8000/auth/login',{
+            const response = await fetch('https://workly-dusky.vercel.app/auth/login',{
                 method: "POST",
 
                 // transform js object into a JSON
