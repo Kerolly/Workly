@@ -14,7 +14,8 @@ app = FastAPI()
 origins = [
     "http://localhost:5173", # for development
     "http://127.0.0.1:5173",
-    "https://workly-dusky.vercel.app/"
+    "https://workly-dusky.vercel.app",
+    "https://workly-ppl5.onrender.com"
 ]
 
 app.add_middleware(
