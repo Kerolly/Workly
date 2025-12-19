@@ -18,6 +18,8 @@ import {useNavigate} from "react-router";
 
 
 export default function SignUp() {
+    const API_URL = import.meta.env.VITE_API_URL;
+
 
     const [show, setShow] = useState(false);
     const handleClickPassword = () => {
@@ -67,7 +69,7 @@ export default function SignUp() {
 
         try{
 
-            const response = await fetch("https://workly-dusky.vercel.app/auth/register", {
+            const response = await fetch(`${API_URL}/auth/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json", // send JSON

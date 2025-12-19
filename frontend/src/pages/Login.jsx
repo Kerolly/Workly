@@ -17,6 +17,7 @@ import {Link as RouterLink, useNavigate} from "react-router";
 
 
 export default function Login() {
+    const API_URL = import.meta.env.VITE_API_URL;
 
     // Password show
     const [show, setShow] = useState(false);
@@ -52,7 +53,7 @@ export default function Login() {
 
 
             // send the data to server
-            const response = await fetch('https://workly-dusky.vercel.app/auth/login',{
+            const response = await fetch(`${API_URL}/auth/login`,{
                 method: "POST",
 
                 // transform js object into a JSON
