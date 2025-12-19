@@ -11,6 +11,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parents[1]
 load_dotenv(BASE_DIR / ".env")
 
+DB_URL = os.getenv("DATABASE_URL")
 DB_NAME = os.getenv("DATABASE_NAME")
 DB_USER = os.getenv("DATABASE_USER")
 DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
@@ -20,8 +21,8 @@ DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
 # utils/database.py
 async def get_db_connection():
     conn = await psycopg.AsyncConnection.connect(
-        host="localhost", dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD,
-        port=5432, row_factory=dict_row
+        host=DB_URL, dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD,
+        row_factory=dict_row
     )
     try:
         yield conn
