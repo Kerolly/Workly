@@ -4,7 +4,7 @@ import {Route, Routes} from "react-router-dom";
 import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 
 import Login from '@/pages/Login.jsx'
-import Signup from '@/pages/signup.jsx'
+import SignUp from '@/pages/signUp.jsx'
 import Profile from '@/pages/Profile.jsx'
 import EmployeeDashboard from "@/pages/dashboard/EmployeeDashboard.jsx";
 
@@ -16,7 +16,7 @@ function App() {
 
             <Route path="/login" element={<Login/>}/>
 
-            <Route path="/signup" element={<Signup/>}/>
+            <Route path="/signup" element={<SignUp/>}/>
 
             <Route path="/profile"
                    element={
