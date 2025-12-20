@@ -88,4 +88,4 @@ The application will launch at http://localhost:5173 (or similar)
 ```
 
 ### 📄 License
-Distributed under the MIT License.
+All Rights Reserved.
