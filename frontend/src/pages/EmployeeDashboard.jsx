@@ -21,7 +21,7 @@ import {useParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import {Calendar, Clock, Clock7, DollarSign, Plus, Trash2, TrendingUp} from "lucide-react"
 import {authFetch} from "@/apiClient.js";
-import {calculateHours, getHourlyRates, roundTimeQuarterHour} from "@/pages/dashboard/utils/hoursHandler.js";
+import {calculateHours, getHourlyRates, roundTimeQuarterHour} from "@/features/dashboard/utils/hoursHandler.js";
 import {LuChevronLeft, LuChevronRight} from "react-icons/lu";
 
 
