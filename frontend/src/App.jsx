@@ -7,6 +7,7 @@ import Login from '@/pages/Login.jsx'
 import SignUp from '@/pages/SignUp.jsx'
 import Profile from '@/pages/Profile.jsx'
 import EmployeeDashboard from "@/pages/EmployeeDashboard.jsx";
+import ProfilePage from "@/pages/ProfilePage.jsx";
 
 function App() {
     const [count, setCount] = useState(0)
@@ -29,6 +30,11 @@ function App() {
                 <ProtectedRoute>
                     <EmployeeDashboard/>
                 </ProtectedRoute>}/>
+
+            <Route path="/dashboard/profile"
+                   element={
+                    <ProtectedRoute> <ProfilePage /> </ProtectedRoute>
+                   } />
 
 
             <Route path="*" element={<Login/>}/> {/* fallback */}
