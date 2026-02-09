@@ -7,10 +7,10 @@ import {
     Button,
     Input,
     Text,
-    HStack, Flex, Link, Alert
+    HStack, Flex, Alert
 } from "@chakra-ui/react";
 import {logout} from "@/authHandler.js";
-import {useNavigate} from "react-router";
+import {useNavigate, Link} from "react-router";
 import {LogOut} from "lucide-react"
 
 export default function Header(){
@@ -34,7 +34,8 @@ export default function Header(){
             </Box>
 
             {/*--- Menu Section ---*/}
-            <Box>
+            <Box display={"flex"} alignItems={"center"} gap={"10px"}>
+                <Link to={"/profile"}><Text>Profile</Text></Link>
                 <Button variant="plain" bg={{ base: "transparent", _hover: "var(--primary)" }}
                         color={{ base: "var(--black)", _hover: "var(--primary-50)" }}
                         onClick={handleLogout}><LogOut/> Logout</Button>
