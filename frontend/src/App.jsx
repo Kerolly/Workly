@@ -22,7 +22,7 @@ function App() {
             <Route path="/profile"
                    element={
                 <ProtectedRoute>
-                    <Profile/>
+                    <ProfilePage/>
                 </ProtectedRoute>}/>
 
             <Route path="/dashboard/employee"
@@ -31,10 +31,10 @@ function App() {
                     <EmployeeDashboard/>
                 </ProtectedRoute>}/>
 
-            <Route path="/dashboard/profile"
-                   element={
-                    <ProtectedRoute> <ProfilePage /> </ProtectedRoute>
-                   } />
+            {/*<Route path="/dashboard/profile"*/}
+            {/*       element={*/}
+            {/*        <ProtectedRoute> <ProfilePage /> </ProtectedRoute>*/}
+            {/*       } />*/}
 
 
             <Route path="*" element={<Login/>}/> {/* fallback */}
