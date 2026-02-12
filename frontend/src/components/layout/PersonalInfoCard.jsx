@@ -58,6 +58,12 @@ export default function PersonalInfoCard() {
                                 label={"First Name"} type={"text"}
                                 error={errors.firstName?.message}/>
 
+                    <Button type={"submit"}>Send</Button>
+                </form>
+
+
+            </Box>
+
         </Box>
     )
 }
