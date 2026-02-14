@@ -1,7 +1,7 @@
 // PersonalInfoCard.jsx
 
 import {Box, Button, Flex, Heading, Icon, Text} from "@chakra-ui/react";
-import {CircleUserRound} from "lucide-react";
+import {CircleUserRound, Lock, Mail, Phone, UserRoundPen} from "lucide-react";
 import InputField from "@/components/shared/InputField.jsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -59,17 +59,17 @@ export default function PersonalInfoCard() {
         <Box bg={"white"} borderRadius={"15px"}
              maxWidth={"700px"}>
 
-            <Box p={"40px"}>
+            <Box p={{base: "25px", lg: "30px", xl: "40px"}}>
 
 
-                <Flex direction={"row"} justify={"space-between"} align={"flex-start"}>
+                <Flex direction={{base: "column", lg: "row"}} justify={"space-between"} align={"flex-start"}>
 
-                    <Box>
+                    <Box display={{base: "none", lg: "block"}}>
                         <Heading>Personal Information</Heading>
                         <Text>You can view and edit your data</Text>
                     </Box>
 
-                    <Flex align={"center"} gap={"12px"}>
+                    <Flex align={"center"} gap={"12px"} my={{base: "15px", lg: "0px"}}>
                         <Icon color={"primary.500"}><CircleUserRound size={"50px"} strokeWidth={1.2}/></Icon>
                         <Box>
                             <Heading>Ticarat Andrei</Heading>
@@ -81,11 +81,56 @@ export default function PersonalInfoCard() {
 
                 {/* Form section */}
                 <form onSubmit={handleSubmit(onSubmit, onError => console.log(onError))}>
-                    <InputField register={register} name={"firstName"}
-                                label={"First Name"} type={"text"}
-                                error={errors.firstName?.message}/>
 
-                    <Button type={"submit"}>Send</Button>
+                    <Flex direction={"column"}>
+                        <Flex direction={{base: "column", lg:"row"}} justify={"space-between"} gap={"20px"} mt={"12px"}>
+                            <InputField register={register} name={"firstName"}
+                                        label={"First Name"} type={"text"} readOnly={!isEditable}
+                                        error={errors.firstName?.message} startElement={<UserRoundPen size={"16px"}/>}/>
+
+                            <InputField register={register} name={"lastName"}
+                                        label={"Last Name"} type={"text"} readOnly={!isEditable}
+                                        error={errors.lastName?.message} startElement={<UserRoundPen size={"16px"}/>}/>
+                        </Flex>
+
+                        <Flex direction={{base: "column", lg:"row"}} justify={"space-between"} gap={"20px"} mt={"12px"}>
+                            <InputField register={register} name={"email"}
+                                        label={"Email"} type={"text"} readOnly={!isEditable}
+                                        error={errors.email?.message} startElement={<Mail size={"16px"}/>}/>
+
+                            <InputField register={register} name={"phone"}
+                                        label={"Phone Number"} type={"tel"} readOnly={!isEditable}
+                                        error={errors.phone?.message} startElement={<Phone size={"16px"}/>}/>
+                        </Flex>
+
+                        <Flex direction={{base: "column", lg:"row"}} justify={"space-between"} gap={"20px"} mt={"12px"}>
+                            <InputField register={register} name={"role"}
+                                        label={"Role"} type={"text"} readOnly={true}
+                                        error={errors.role?.message} startElement={<Lock size={"16px"}/>}/>
+
+                            <InputField register={register} name={"contractType"}
+                                        label={"Contract Type"} type={"text"} readOnly={true}
+                                        error={errors.contractType?.message} startElement={<Lock size={"16px"}/>}/>
+                        </Flex>
+
+                        <Box alignSelf={"flex-end"} mt={"20px"}>
+
+                            {/*--- Edit button ---*/}
+                            <Button onClick={() => {
+                                setIsEditable(!isEditable)
+                            }}
+                                    display={isEditable ? "none" : null}
+                                    bg={{base: "secondary.800", _hover: "secondary.700"}} height={"30px"}
+                                    color={"white"}>Edit</Button>
+
+                            {/*--- Send button ---*/}
+                            <Button onClick={() => setIsEditable(!isEditable)}
+                                type={"submit"} display={isEditable ? null : "none"}
+                                    bg={{base: "secondary.800", _hover: "secondary.700"}} height={"30px"}
+                                    color={"white"}
+                            >Send</Button>
+                        </Box>
+                    </Flex>
                 </form>
 
 
