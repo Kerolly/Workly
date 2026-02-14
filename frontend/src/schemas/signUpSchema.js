@@ -9,6 +9,7 @@ export const signUpSchema = z.object({
     email: z.string().email("Please enter a valid email").optional(),
     password: z.string().min(8, "Please enter a minimum of 8 characters").optional(),
     role: z.string("Please select a role").optional(),
-    phone: z.number().optional()
+    phone: z.string("Please type a correct number").optional(),
+    contractType: z.string("Please select a contract type").optional(),
 });
 
