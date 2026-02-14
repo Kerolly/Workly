@@ -6,10 +6,13 @@ import InputField from "@/components/shared/InputField.jsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {signUpSchema} from "@/schemas/signUpSchema.js";
+import {useEffect, useState} from "react";
 
 
 export default function PersonalInfoCard() {
 
+    // --------------- useState declaration ---------------
+    const [isEditable, setIsEditable] = useState(false);
 
     // --------------- Manipulating form ---------------
 
@@ -19,7 +22,12 @@ export default function PersonalInfoCard() {
         handleSubmit,
         formState: {errors, isSubmitting},
         reset,
-    } = useForm({resolver: zodResolver(signUpSchema)});
+    } = useForm({
+        resolver: zodResolver(signUpSchema),
+        defaultValues: {
+            firstName: "", lastName: "", email: "", phone: "", role: "", contractType: "",
+        }
+    });
 
     // submit data
     const onSubmit = async (data) => {
@@ -27,6 +35,25 @@ export default function PersonalInfoCard() {
         console.log(data);
         reset();
     }
+
+    useEffect(() => {
+        // Get data from db
+        // ...
+
+        setTimeout(() => {
+            const data = {
+                firstName: "Ticarat",
+                lastName: "Andrei",
+                email: "abc@gmail.com",
+                phone: "0721234567",
+                role: "Manager",
+                contractType: "Full-time"
+            };
+            reset(data);
+
+        }, 1000)
+
+    }, [reset]);
 
     return (
         <Box bg={"white"} borderRadius={"15px"}
