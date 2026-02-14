@@ -38,7 +38,7 @@ const systemTheme = createSystem(defaultConfig, {
 
     globalCss: {
         "html, body": {
-            bg: "primary.50",
+            bg: "secondary.50",
             color: "secondary.900",
             fontFamily: "Inter, sans-serif",
         }
