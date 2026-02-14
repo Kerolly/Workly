@@ -1,6 +1,6 @@
 // InputField.jsx
 
-import {Field, Input, Box, Flex} from "@chakra-ui/react";
+import {Box, Field, Input, InputGroup} from "@chakra-ui/react";
 
 
 /**
@@ -8,7 +8,7 @@ import {Field, Input, Box, Flex} from "@chakra-ui/react";
  *
  * @param {string} label - Label displayed above the input.
  * @param {string} name - Field name used by react-hook-form (e.g. "firstName").
- * @param {(name: string) => Object} register - react-hook-form `register` function.
+ * @param {(name: string, option?: Object) => Object} register - react-hook-form `register` function.
  * @param {string} error - Validation error message to display.
  * @param {string} [type="text"] - HTML input type (text, email, password, etc.).
  * @param {string | undefined} helperText - Helper text displayed under the label.
@@ -24,12 +24,15 @@ export default function InputField(
         value,
         register,
         error,
-        type="text",
+        type = "text",
         helperText,
         placeholder,
+        startElement,
+        endElement,
+        readOnly = false,
         ...rest
     }
-){
+) {
 
     if (!register)
         console.error("Register is not transmitted!");
@@ -37,13 +40,17 @@ export default function InputField(
         console.error("Name is not transmitted!");
 
 
-    return(
+    return (
 
         <Box>
             <Field.Root invalid={!!error} {...rest}>
-                <Field.Label>{label}</Field.Label>
+                <Field.Label mb={"-7px"} fontSize={"14px"}>{label}</Field.Label>
                 <Field.HelperText>{helperText}</Field.HelperText>
-                <Input {...register(name)} type={type} placeholder={placeholder} />
+                <InputGroup  startElement={startElement} endElement={endElement}>
+                <Input {...register(name, {valueAsNumber: type === "number"})}
+                       type={type} placeholder={placeholder} readOnly={readOnly}
+                    height={"32px"} borderRadius={"7px"}/>
+                </InputGroup>
                 <Field.ErrorText>{error}</Field.ErrorText>
             </Field.Root>
 
