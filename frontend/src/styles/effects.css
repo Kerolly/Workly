@@ -1,0 +1,98 @@
+/* effects.css */
+
+.floating-card {
+    /* Initial state */
+
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05), 0 6px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.floating-card:hover {
+    /* Hover state */
+
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/*
+---- Chakra UI v3 props ----
+
+              boxShadow="0 10px 20px rgba(0, 0, 0, 0.05), 0 6px 6px rgba(0, 0, 0, 0.05)"
+             transition="all 0.3s ease"
+             _hover={{
+                 transform: "translateY(-4px)",
+                 boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+             }}
+
+ */
+
+
+/* ----------------------------------------------------
+    "Shine" Effect
+    A beam of white light passes over the button.
+    Works on ANY background color.
+---------------------------------------------------- */
+.btn-shine {
+  position: relative;
+  overflow: hidden; /* Essential so the beam doesn't spill outside the button */
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%; /* Starts from outside on the left */
+  width: 50%;
+  height: 100%;
+  /* Transparent white gradient - does not affect the base color */
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg); /* Skew the beam */
+  pointer-events: none; /* Prevents blocking clicks */
+}
+
+.btn-shine:hover::after {
+  animation: shine-anim 0.75s; /* Animation duration */
+}
+
+@keyframes shine-anim {
+  100% {
+    left: 150%; /* Moves all the way past the right edge */
+  }
+}
+
+/* ----------------------------------------------------
+   "Jelly" (Squish) Effect
+    Feels tactile. The button expands slightly on hover
+    and contracts on click.
+---------------------------------------------------- */
+
+.btn-jelly {
+    transition: transform 0.2s cubic-bezier(0.08, 0.52, 0.52, 1) !important;
+}
+
+.btn-jelly:hover {
+    transform: scale(1.05); /* Increases by 5% */
+}
+
+.btn-jelly:active {
+    transform: scale(0.95); /* It shrinks 5% per click */
+}
+
+
+/* ----------------------------------------------------
+   "Lift" Effect (Simple Float)
+    Good for cards or secondary buttons.    
+---------------------------------------------------- */
+.btn-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.btn-lift:hover {
+    transform: translateY(-3px); /* Up 3px */
+    box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+}

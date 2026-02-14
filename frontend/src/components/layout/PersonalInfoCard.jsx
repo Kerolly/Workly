@@ -7,9 +7,12 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {signUpSchema} from "@/schemas/signUpSchema.js";
 import {useEffect, useState} from "react";
+import "@/styles/effects.css";
 
 
-export default function PersonalInfoCard() {
+export default function PersonalInfoCard(
+    {...rest}
+) {
 
     // --------------- useState declaration ---------------
     const [isEditable, setIsEditable] = useState(false);
@@ -56,8 +59,8 @@ export default function PersonalInfoCard() {
     }, [reset]);
 
     return (
-        <Box bg={"white"} borderRadius={"15px"}
-             maxWidth={"700px"}>
+        <Box bg={"white"} borderRadius={"15px"} border={"1px solid secondary.300"}
+             maxWidth={"700px"} {...rest} className={"floating-card"}>
 
             <Box p={{base: "25px", lg: "30px", xl: "40px"}}>
 
@@ -121,13 +124,13 @@ export default function PersonalInfoCard() {
                             }}
                                     display={isEditable ? "none" : null}
                                     bg={{base: "secondary.800", _hover: "secondary.700"}} height={"30px"}
-                                    color={"white"}>Edit</Button>
+                                    color={"white"} className={"btn-jelly"} >Edit</Button>
 
                             {/*--- Send button ---*/}
                             <Button onClick={() => setIsEditable(!isEditable)}
                                 type={"submit"} display={isEditable ? null : "none"}
                                     bg={{base: "secondary.800", _hover: "secondary.700"}} height={"30px"}
-                                    color={"white"}
+                                    color={"white"} className={"btn-shine"}
                             >Send</Button>
                         </Box>
                     </Flex>
