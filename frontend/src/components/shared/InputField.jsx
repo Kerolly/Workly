@@ -8,12 +8,16 @@ import {Box, Field, Input, InputGroup} from "@chakra-ui/react";
  *
  * @param {string} label - Label displayed above the input.
  * @param {string} name - Field name used by react-hook-form (e.g. "firstName").
+ * @param {string|number} value - Optional controlled value
  * @param {(name: string, option?: Object) => Object} register - react-hook-form `register` function.
  * @param {string} error - Validation error message to display.
  * @param {string} [type="text"] - HTML input type (text, email, password, etc.).
  * @param {string | undefined} helperText - Helper text displayed under the label.
  * @param {string | undefined} placeholder - Input placeholder.
- * @param {*} value - Optional controlled value (avoid mixing with RHF unless intended).
+ * @param {iconNode} startElement - Element rendered at the start of the input (left icon/addon).
+ * @param {iconNode} endElement - Element rendered at the end of the input (right icon/addon).
+ * @param {boolean} [readOnly=false] - Whether the input is read-only.
+ * @param {string} [borderColor="secondary.500"] - Chakra UI border color token/value for the input.
  * @param rest - Additional props passed to the Chakra UI component.
  */
 
@@ -30,6 +34,7 @@ export default function InputField(
         startElement,
         endElement,
         readOnly = false,
+        borderColor="secondary.500",
         ...rest
     }
 ) {
@@ -49,7 +54,7 @@ export default function InputField(
                 <InputGroup  startElement={startElement} endElement={endElement}>
                 <Input {...register(name, {valueAsNumber: type === "number"})}
                        type={type} placeholder={placeholder} readOnly={readOnly}
-                    height={"32px"} borderRadius={"7px"}/>
+                    height={"32px"} borderRadius={"7px"} borderColor={borderColor}/>
                 </InputGroup>
                 <Field.ErrorText>{error}</Field.ErrorText>
             </Field.Root>
