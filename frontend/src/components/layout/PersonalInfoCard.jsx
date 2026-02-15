@@ -65,7 +65,8 @@ export default function PersonalInfoCard(
             <Box p={{base: "25px", lg: "30px", xl: "40px"}}>
 
 
-                <Flex direction={{base: "column", lg: "row"}} justify={"space-between"} align={"flex-start"}>
+                <Flex direction={{base: "column", lg: "row"}} justify={"space-between"} align={"flex-start"}
+                mb={"20px"}>
 
                     <Box display={{base: "none", lg: "block"}}>
                         <Heading>Personal Information</Heading>
@@ -86,52 +87,65 @@ export default function PersonalInfoCard(
                 <form onSubmit={handleSubmit(onSubmit, onError => console.log(onError))}>
 
                     <Flex direction={"column"}>
-                        <Flex direction={{base: "column", lg:"row"}} justify={"space-between"} gap={"20px"} mt={"12px"}>
+                        <Flex direction={{base: "column", lg: "row"}} justify={"space-between"} gap={"20px"}
+                              mt={"12px"}>
                             <InputField register={register} name={"firstName"}
                                         label={"First Name"} type={"text"} readOnly={!isEditable}
-                                        error={errors.firstName?.message} startElement={<UserRoundPen size={"16px"}/>}/>
+                                        error={errors.firstName?.message} startElement={<UserRoundPen size={"16px"}/>}
+                                        borderColor={isEditable ? "primary.500" : "secondary.500"}/>
 
                             <InputField register={register} name={"lastName"}
                                         label={"Last Name"} type={"text"} readOnly={!isEditable}
-                                        error={errors.lastName?.message} startElement={<UserRoundPen size={"16px"}/>}/>
+                                        error={errors.lastName?.message} startElement={<UserRoundPen size={"16px"}/>}
+                                        borderColor={isEditable ? "primary.500" : "secondary.500"}/>
                         </Flex>
 
-                        <Flex direction={{base: "column", lg:"row"}} justify={"space-between"} gap={"20px"} mt={"12px"}>
+                        <Flex direction={{base: "column", lg: "row"}} justify={"space-between"} gap={"20px"}
+                              mt={"12px"}>
                             <InputField register={register} name={"email"}
                                         label={"Email"} type={"text"} readOnly={!isEditable}
-                                        error={errors.email?.message} startElement={<Mail size={"16px"}/>}/>
+                                        error={errors.email?.message} startElement={<Mail size={"16px"}/>}
+                                        borderColor={isEditable ? "primary.500" : "secondary.500"}/>
 
                             <InputField register={register} name={"phone"}
                                         label={"Phone Number"} type={"tel"} readOnly={!isEditable}
-                                        error={errors.phone?.message} startElement={<Phone size={"16px"}/>}/>
+                                        error={errors.phone?.message} startElement={<Phone size={"16px"}/>}
+                                        borderColor={isEditable ? "primary.500" : "secondary.500"}/>
                         </Flex>
 
-                        <Flex direction={{base: "column", lg:"row"}} justify={"space-between"} gap={"20px"} mt={"12px"}>
+                        <Flex direction={{base: "column", lg: "row"}} justify={"space-between"} gap={"20px"}
+                              mt={"12px"}>
                             <InputField register={register} name={"role"}
                                         label={"Role"} type={"text"} readOnly={true}
-                                        error={errors.role?.message} startElement={<Lock size={"16px"}/>}/>
+                                        error={errors.role?.message} startElement={<Lock size={"16px"}/>}
+                            />
 
                             <InputField register={register} name={"contractType"}
                                         label={"Contract Type"} type={"text"} readOnly={true}
-                                        error={errors.contractType?.message} startElement={<Lock size={"16px"}/>}/>
+                                        error={errors.contractType?.message} startElement={<Lock size={"16px"}/>}
+                            />
                         </Flex>
 
-                        <Box alignSelf={"flex-end"} mt={"20px"}>
+                        <Box mt={"20px"}>
+                            <Flex justify={isEditable ? "space-between" : "flex-end"}>
+                                {isEditable ?
+                                    <Text color={"primary.400"}>You can edit now</Text> : null}
 
-                            {/*--- Edit button ---*/}
-                            <Button onClick={() => {
-                                setIsEditable(!isEditable)
-                            }}
-                                    display={isEditable ? "none" : null}
-                                    bg={{base: "secondary.800", _hover: "secondary.700"}} height={"30px"}
-                                    color={"white"} className={"btn-jelly"} >Edit</Button>
+                                {/*--- Edit button ---*/}
+                                <Button onClick={() => {
+                                    setIsEditable(!isEditable)
+                                }}
+                                        display={isEditable ? "none" : null}
+                                        bg={{base: "secondary.800", _hover: "secondary.700"}} height={"30px"}
+                                        color={"white"} className={"btn-jelly"}>Edit</Button>
 
-                            {/*--- Send button ---*/}
-                            <Button onClick={() => setIsEditable(!isEditable)}
-                                type={"submit"} display={isEditable ? null : "none"}
-                                    bg={{base: "secondary.800", _hover: "secondary.700"}} height={"30px"}
-                                    color={"white"} className={"btn-shine"}
-                            >Send</Button>
+                                {/*--- Send button ---*/}
+                                <Button onClick={() => setIsEditable(!isEditable)}
+                                        type={"submit"} display={isEditable ? null : "none"}
+                                        bg={{base: "secondary.800", _hover: "secondary.700"}} height={"30px"}
+                                        color={"white"} className={"btn-shine"}
+                                >Send</Button>
+                            </Flex>
                         </Box>
                     </Flex>
                 </form>
