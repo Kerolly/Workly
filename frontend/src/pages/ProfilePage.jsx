@@ -5,6 +5,7 @@ import SidebarComponent from "@/components/layout/SidebarComponent.jsx";
 import PersonalInfoCard from "@/components/layout/PersonalInfoCard.jsx";
 import InfoCard from "@/components/shared/InfoCard.jsx";
 import {Briefcase} from "lucide-react";
+import HourlyRatesCard from "@/components/layout/HourlyRatesCard.jsx";
 
 export default function ProfilePage() {
     return (
@@ -38,7 +39,10 @@ export default function ProfilePage() {
                     </Box>
 
 
+                    <HourlyRatesCard/>
+
                 </Grid>
+
             </Flex>
 
         </>
