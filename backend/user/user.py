@@ -259,3 +259,20 @@ class User:
         return "Ok"
 
 
+    async def get_user_hourly_rates(self, user_id, limit: int = 50):
+        query = f"""
+        SELECT hr.hourly_rate_gross, hr.activity_id, a.activity_name
+        FROM hourlyrates as hr
+        JOIN activities as a ON hr.activity_id = a.id
+        WHERE hr.user_id = %s
+"""
+        async with self.conn.cursor() as cursor:
+            await cursor.execute(query,
+                                 (user_id, ))
+
+            results = await cursor.fetchall()
+
+        #print(results)
+        return results
+
+

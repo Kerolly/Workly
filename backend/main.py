@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.routers import dashboard_routers
 from backend.user import users_router
+from backend.routers import user_routers
 from backend.auth import auth_routers
 from backend.user.user import User
 from backend.user.user_schema import UserOut
@@ -12,7 +13,7 @@ from backend.utils.database import get_db_connection
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173", # for development
+    "http://localhost:5173",  # for development
     "http://127.0.0.1:5173",
     "http://localhost:5173",
     "https://workly-dusky.vercel.app",
@@ -21,7 +22,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins, # allow all origins from the list
+    allow_origins=origins,  # allow all origins from the list
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,21 +33,26 @@ app.add_middleware(
 app.include_router(users_router.router)
 app.include_router(auth_routers.router)
 app.include_router(dashboard_routers.router)
+app.include_router(user_routers.router)
+
 
 @app.get("/")
 def index():
-    return {"Hello": "World"}
+    return {"title": "Stafy Time Tracking API",
+            "api version": "1.0",
+            "Status": "Everything is fine!"}
+
 
 @app.get("/profile", response_model=UserOut)
-async def get_profile(current_user: UserOut = Depends(get_current_active_user), db = Depends(get_db_connection)):
-
+async def get_profile(current_user: UserOut = Depends(get_current_active_user), db=Depends(get_db_connection)):
     user_repo = User(db)
 
     current_user = await user_repo.get_full_profile_by_email(current_user.email)
 
-    #print("main:", current_user)
+    # print("main:", current_user)
 
     return current_user
+
 
 @app.get("/verify-token")
 async def verify_token_endpoint(current_user: UserOut = Depends(get_current_active_user)):
